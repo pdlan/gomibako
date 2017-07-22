@@ -1,0 +1,7 @@
+if (MACPORTS)
+  include_directories ("/opt/local/include")
+endif (MACPORTS)
+aux_source_directory (. DIR_THEME_CLEAN_SRCS)
+add_library (theme_clean SHARED ${DIR_THEME_CLEAN_SRCS})
+set_property (TARGET theme_clean PROPERTY CXX_STANDARD 11)
+set_property (TARGET theme_clean PROPERTY CXX_STANDARD_REQUIRED ON)

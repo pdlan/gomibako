@@ -1,0 +1,14 @@
+#ifndef GOMIBAKO_INCLUDE_PAGER_H
+#define GOMIBAKO_INCLUDE_PAGER_H
+#include "article.h"
+
+namespace gomibako {
+class Pager {
+public:
+    Pager(int items_per_page);
+    Filter get_filter(int page, int &pages);
+private:
+    int items_per_page;
+};
+}
+#endif
