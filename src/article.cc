@@ -169,6 +169,29 @@ bool ArticleManager::delete_article(const std::string &id, bool delete_file) {
     return true;
 }
 
+bool ArticleManager::edit_article(const std::string &id, const std::string &title, time_t timestamp, 
+                                  const std::set<std::string> &tags, const std::string &content) {
+    auto it = this->id_metadata_map.find(id);
+    if (it == this->id_metadata_map.end()) {
+        return false;
+    }
+    auto it2 = std::find(this->timestamp_id_pairs.begin(),
+                         this->timestamp_id_pairs.end(),
+                         std::make_pair(it->second.timestamp, it->second.id));
+    std::ofstream fs(it->second.filename);
+    if (!fs) {
+        return false;
+    }
+    fs << content;
+    fs.close();
+    it->second.title = title;
+    it->second.timestamp = timestamp;
+    it->second.tags = tags;
+    it2->first = timestamp;
+    sort_metadata();
+    return save_metadata();
+}
+
 void ArticleManager::apply_filter(const Filter &filter, std::vector<std::string> &ids) const {
     TimeIDVector out;
     filter(this->timestamp_id_pairs, this->id_metadata_map, out);
@@ -260,4 +283,53 @@ bool PageManager::get_page(const std::string &id, CustomPage &page) const {
         }
     }
     return false;
+}
+
+bool PageManager::edit_page(const std::string &id, int order, const std::string &title,
+                            const std::string &content) {
+    auto it = std::find_if(this->pages.begin(), this->pages.end(), [&id](const CustomPage &p) {
+        return p.id == id;
+    });
+    if (it == this->pages.end()) {
+        return false;
+    }
+    it->title = title;
+    it->content = content;
+    return save_pages();
+}
+
+bool PageManager::save_pages() {
+    YAML::Emitter out;
+    out << YAML::BeginSeq;
+    for (auto &&i : this->pages) {
+        out << YAML::BeginMap
+            << YAML::Key << "id" << YAML::Value << i.id
+            << YAML::Key << "order" << YAML::Value << i.order
+            << YAML::Key << "title" << YAML::Value << i.title
+            << YAML::Key << "content" << YAML::Value << i.content
+            << YAML::EndMap;
+    }
+    out << YAML::EndSeq;
+    if (!out.good()) {
+        return false;
+    }
+    std::ofstream fs(this->pages_path);
+    if (!fs) {
+        return false;
+    }
+    fs << out.c_str();
+    fs.close();
+    return true;
+}
+
+bool PageManager::delete_page(const std::string &id) {
+    auto it = std::find_if(this->pages.begin(), this->pages.end(), [&id](const CustomPage &p) {
+        return p.id == id;
+    });
+    if (it == this->pages.end()) {
+        return false;
+    }
+    this->pages.erase(it);
+    this->sort_pages();
+    return save_pages();
 }
