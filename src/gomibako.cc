@@ -67,18 +67,35 @@ bool Gomibako::initialize(const std::string &config_filename) {
         return metadata.tags.count(arg);
     }));
     this->theme_static_handler.reset(new StaticHandler(theme_config.static_directory, theme_config.static_files));
-    CROW_ROUTE(app, "/static/<string>")([this] (const std::string &filename) {
+    this->admin_static_handler.reset(new StaticHandler("assets/admin/static", {
+        {"css/bootstrap.min.css", "text/css"},
+        {"css/style.css", "text/css"},
+        {"js/bootstrap.min.js", "text/javascript"},
+        {"js/jquery.min.js", "text/javascript"},
+        {"fonts/glyphicons-halflings-regular.eot", "application/vnd.ms-fontobject"},
+        {"fonts/glyphicons-halflings-regular.ttf", "application/font-sfnt"},
+        {"fonts/glyphicons-halflings-regular.woff2", "font/woff2"},
+        {"fonts/glyphicons-halflings-regular.svg", "image/svg+xml"},
+        {"fonts/glyphicons-halflings-regular.woff", "application/font-woff"}
+    }));
+    CROW_ROUTE(app, "/static/<path>")([this] (const std::string &filename) {
         return this->theme_static_handler->handle(filename);
+    });
+    CROW_ROUTE(app, "/admin/static/<path>")([this] (const std::string &filename) {
+        return this->admin_static_handler->handle(filename);
     });
     CROW_ROUTE(app, "/article/<string>/")(handler_article);
     CROW_ROUTE(app, "/page/c<string>/")(handler_custom_page);
-    CROW_ROUTE(app, "/page/<int>/")(handler_page);
+    CROW_ROUTE(app, "/page/<uint>/")(handler_page);
     CROW_ROUTE(app, "/")(std::bind(handler_page, 1));
-    CROW_ROUTE(app, "/tag/<string>/page/<int>/")(handler_tag);
+    CROW_ROUTE(app, "/tag/<string>/page/<uint>/")(handler_tag);
     CROW_ROUTE(app, "/tag/<string>/")(std::bind(handler_tag, placeholders::_1, 1));
-    CROW_ROUTE(app, "/archives/page/<int>/")(handler_archives);
+    CROW_ROUTE(app, "/archives/page/<uint>/")(handler_archives);
     CROW_ROUTE(app, "/archives/")(std::bind(handler_archives, 1));
-    CROW_ROUTE(app, "/admin/")(std::bind(handler_admin));
+    CROW_ROUTE(app, "/admin/")(handler_admin);
+    CROW_ROUTE(app, "/admin/article/page/<uint>/", handler_admin_article);
+    CROW_ROUTE(app, "/admin/article/")(std::bind(handler_admin_article, 1));
+    crow::mustache::set_base("assets/admin/template/");
     return true;
 }
 

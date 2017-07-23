@@ -14,7 +14,7 @@ R"(<!DOCTYPE html>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width" />
-    <title>")" << title << R"(</title>
+    <title>)" << title << R"(</title>
     <link rel="stylesheet" href=")" << url_maker->url_static("clean.css") << R"(" type="text/css" />
     <link rel="alternate" type="application/rss+xml" href="/feed.xml" title=")" << site_information.name << R"(" />
 </head>

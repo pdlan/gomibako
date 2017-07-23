@@ -45,6 +45,7 @@ private:
     std::shared_ptr<Pager> archives_pager;
     std::shared_ptr<CachedFilter<std::string>> tag_filter;
     std::shared_ptr<StaticHandler> theme_static_handler;
+    std::shared_ptr<StaticHandler> admin_static_handler;
     SiteInformation site_information;
     std::string ip;
     uint16_t port;

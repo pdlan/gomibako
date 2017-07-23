@@ -104,7 +104,16 @@ crow::response handler_archives(int page) {
 }
 
 crow::response handler_admin() {
-    return crow::response("test");
+    crow::json::wvalue ctx;
+    ctx["title"] = "Home | Dashboard";
+    return crow::response(crow::mustache::load("index.html").render(ctx));
+}
+
+crow::response handler_admin_article(int page) {
+    crow::json::wvalue ctx;
+    ctx["title"] = "Article | Dashboard";
+    return crow::response(crow::mustache::load("article.html").render(ctx));
+}
 }
 
 void ErrorHandler::after_handle(crow::request &req, crow::response &res, ErrorHandler::context &ctx) {
