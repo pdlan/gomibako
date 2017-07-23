@@ -106,10 +106,6 @@ std::string urldecode(const std::string &data) {
     return os.str();
 }
 
-URLMaker::URLMaker(const std::string &site_url) {
-    this->site_url = site_url;
-}
-
 std::string URLMaker::url_article(const std::string &id) {
     using namespace std;
     ostringstream os;

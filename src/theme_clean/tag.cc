@@ -1,0 +1,40 @@
+#include <string>
+#include <sstream>
+#include <iomanip>
+#include <ctime>
+#include "theme_api.h"
+#include "layout.hpp"
+
+using namespace std;
+using namespace gomibako;
+
+extern"C" void render_tag(ostringstream &out, const vector<ArticleMetadata> &metadata,
+                          const vector<ostringstream> &content, const std::string &tag,
+                          int page, int pages, const SiteInformation &site_information,
+                          shared_ptr<URLMaker> url_maker) {
+    header(out, site_information, url_maker, site_information.name);
+    out << R"(<ol id="posts">)";
+    for (size_t i = 0; i < content.size(); ++i) {
+        out <<
+R"(
+    <li>
+        <span class="meta">)" << put_time(localtime(&metadata[i].timestamp), "%Y-%m-%d") <<
+R"(</span> <a href=")" << url_maker->url_article(metadata[i].id) << "\">" << metadata[i].title << R"(</a>
+    </li>)";
+    }
+    out <<
+R"(</ol>
+
+<div id="pagination">)";
+    if (page != 1) {
+        out << R"(<a id="prev" href=")" << url_maker->url_tag(tag, page - 1) << "\">Prev</a>";
+    }
+
+    out << "<span>Page " << page << " of " << pages << "</span>";
+
+    if (page != pages) {
+        out << R"(<a id="next" href=")" << url_maker->url_tag(tag, page + 1) << "\">Next</a>";
+    }
+    out << "</div>";
+    footer(out);
+}

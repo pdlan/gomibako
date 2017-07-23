@@ -14,7 +14,6 @@ int main(int argc, const char **argv) {
     if (!gomibako.initialize("config.yaml")) {
         return -1;
     }
-    //gomibako.get_article_manager()->add_article("测试", "测试内容", time(nullptr), {"中文标签"});
     gomibako.start();
     return 0;
 }

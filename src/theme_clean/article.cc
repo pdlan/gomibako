@@ -9,7 +9,7 @@
 using namespace std;
 using namespace gomibako;
 
-extern std::string comment_html;
+extern string comment_html;
 
 extern"C" void render_article(ostringstream &out, const ArticleMetadata &metadata, const string &content,
                               const SiteInformation &site_information, shared_ptr<URLMaker> url_maker) {

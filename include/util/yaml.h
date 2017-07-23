@@ -9,7 +9,7 @@
 
 namespace gomibako {
 template<typename T>
-bool extract_yaml_map(const YAML::Node &node, const std::pair<const char *, T *> &arg) {
+inline bool extract_yaml_map(const YAML::Node &node, const std::pair<const char *, T *> &arg) {
     if (!node[arg.first]) {
         return false;
     }
@@ -22,9 +22,9 @@ bool extract_yaml_map(const YAML::Node &node, const std::pair<const char *, T *>
 }
 
 template<typename First, typename... Rest>
-bool extract_yaml_map(const YAML::Node &node,
-                      const std::pair<const char *, First *> &arg_first,
-                      const std::pair<const char *, Rest *> &...args_rest) {
+inline bool extract_yaml_map(const YAML::Node &node,
+                             const std::pair<const char *, First *> &arg_first,
+                             const std::pair<const char *, Rest *> &...args_rest) {
     if (!node[arg_first.first]) {
         return false;
     }
@@ -36,5 +36,12 @@ bool extract_yaml_map(const YAML::Node &node,
     return extract_yaml_map(node, args_rest...);
 }
 
+inline bool extract_yaml_map(const YAML::Node &node, const std::pair<const char *, YAML::Node *> &arg) {
+    if (!node[arg.first]) {
+        return false;
+    }
+    *arg.second = node[arg.first];
+    return true;
+}
 }
 #endif

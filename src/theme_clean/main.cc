@@ -6,16 +6,17 @@
 using namespace std;
 using namespace gomibako;
 
-std::string comment_html;
+string comment_html;
 
 extern"C" bool init(ThemeConfiguration &config) {
     config.articles_per_page = 20;
     config.articles_per_page_tag = 20;
     config.articles_per_page_archives = 20;
-    config.static_directory = "theme";
+    config.static_directory = "assets";
     config.static_files  = {
-        {"clean.css", "text／css"}
+        {"clean.css", "text/css"}
     };
+    config.error_codes = {404};
     ifstream fs("comment.html");
     if (fs) {
         ostringstream ss;

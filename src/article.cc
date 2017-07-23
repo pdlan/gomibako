@@ -48,7 +48,7 @@ void ArticleManager::sort_metadata() {
               [] (const T &a, const T &b) {return a.first > b.first;});
 }
 
-bool ArticleManager::get_metadata(const std::string &id, ArticleMetadata &metadata) {
+bool ArticleManager::get_metadata(const std::string &id, ArticleMetadata &metadata) const {
     auto it = this->id_metadata_map.find(id);
     if (it == this->id_metadata_map.end()) {
         return false;
@@ -59,7 +59,7 @@ bool ArticleManager::get_metadata(const std::string &id, ArticleMetadata &metada
 }
 
 bool ArticleManager::get_metadata(const std::vector<std::string> &ids,
-                                  std::vector<ArticleMetadata> &metadata) {
+                                  std::vector<ArticleMetadata> &metadata) const {
     metadata.resize(ids.size());
     for (size_t i = 0; i < ids.size(); ++i) {
         auto it = this->id_metadata_map.find(ids[i]);
@@ -71,7 +71,7 @@ bool ArticleManager::get_metadata(const std::vector<std::string> &ids,
     return true;
 }
 
-bool ArticleManager::get_content(const std::string &id, std::ostringstream &out) {
+bool ArticleManager::get_content(const std::string &id, std::ostringstream &out) const {
     using namespace std;
     auto it = this->id_metadata_map.find(id);
     if (it == this->id_metadata_map.end()) {
@@ -87,7 +87,7 @@ bool ArticleManager::get_content(const std::string &id, std::ostringstream &out)
 }
 
 bool ArticleManager::get_content(const std::vector<std::string> &ids,
-                                 std::vector<std::ostringstream> &out) {
+                                 std::vector<std::ostringstream> &out) const {
     using namespace std;
     out.resize(ids.size());
     for (size_t i = 0; i < ids.size(); ++i) {
@@ -169,7 +169,7 @@ bool ArticleManager::delete_article(const std::string &id, bool delete_file) {
     return true;
 }
 
-void ArticleManager::apply_filter(const Filter &filter, std::vector<std::string> &ids) {
+void ArticleManager::apply_filter(const Filter &filter, std::vector<std::string> &ids) const {
     TimeIDVector out;
     filter(this->timestamp_id_pairs, this->id_metadata_map, out);
     ids.resize(out.size());
@@ -178,7 +178,8 @@ void ArticleManager::apply_filter(const Filter &filter, std::vector<std::string>
     }
 }
 
-void ArticleManager::apply_filters(const std::vector<Filter> &filters, std::vector<std::string> &ids) {
+void ArticleManager::apply_filters(const std::vector<Filter> &filters,
+                                   std::vector<std::string> &ids) const {
     if (filters.size() == 0) {
         apply_filter(filters[0], ids);
         return;
@@ -248,4 +249,15 @@ void PageManager::sort_pages() {
     std::sort(this->pages.begin(), this->pages.end(), [](const CustomPage &a, const CustomPage &b) {
         return a.order < b.order;
     });
+}
+
+bool PageManager::get_page(const std::string &id, CustomPage &page) const {
+    auto it = this->pages.begin();
+    while (it != this->pages.end()) {
+        if (it->id == id) {
+            page = *it;
+            return true;
+        }
+    }
+    return false;
 }

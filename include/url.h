@@ -7,7 +7,7 @@ std::string urldecode(const std::string &data);
 
 class URLMaker {
 public:
-    URLMaker(const std::string &site_url);
+    URLMaker(const std::string &_site_url) : site_url(_site_url) {}
     virtual std::string url_article(const std::string &id);
     virtual std::string url_page(int page);
     virtual std::string url_tag(const std::string &tag, int page = 1);

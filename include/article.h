@@ -35,18 +35,18 @@ public:
     ArticleManager(const std::string &articles_path);
     bool load_metadata();
     bool save_metadata();
-    bool get_metadata(const std::string &id, ArticleMetadata &metadata);
+    bool get_metadata(const std::string &id, ArticleMetadata &metadata) const;
     bool get_metadata(const std::vector<std::string> &ids,
-                      std::vector<ArticleMetadata> &metadata);
-    bool get_content(const std::string &id, std::ostringstream &out);
+                      std::vector<ArticleMetadata> &metadata) const;
+    bool get_content(const std::string &id, std::ostringstream &out) const;
     bool get_content(const std::vector<std::string> &ids,
-                     std::vector<std::ostringstream> &out);
+                     std::vector<std::ostringstream> &out) const;
     std::string add_article(const std::string &title, const std::string &content,
                             time_t timestamp, const std::set<std::string> &tags);
     bool delete_article(const std::string &id, bool delete_file = false);
     void sort_metadata();
-    void apply_filter(const Filter &filter, std::vector<std::string> &ids);
-    void apply_filters(const std::vector<Filter> &filters, std::vector<std::string> &ids);
+    void apply_filter(const Filter &filter, std::vector<std::string> &ids) const;
+    void apply_filters(const std::vector<Filter> &filters, std::vector<std::string> &ids) const;
 private:
     TimeIDVector timestamp_id_pairs;
     IDMetadataMap id_metadata_map;
@@ -63,6 +63,7 @@ public:
     void sort_pages();
     bool delete_page(const std::string &id);
     inline std::vector<CustomPage> * const get_pages() {return &this->pages;};
+    bool get_page(const std::string &id, CustomPage &page) const;
 private:
     std::string pages_path;
     std::vector<CustomPage> pages;
