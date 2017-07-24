@@ -114,7 +114,6 @@ crow::response handler_admin_article(int page) {
     ctx["title"] = "Article | Dashboard";
     return crow::response(crow::mustache::load("article.html").render(ctx));
 }
-}
 
 void ErrorHandler::after_handle(crow::request &req, crow::response &res, ErrorHandler::context &ctx) {
     Gomibako &gomibako = Gomibako::get_instance();

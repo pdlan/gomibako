@@ -93,7 +93,7 @@ bool Gomibako::initialize(const std::string &config_filename) {
     CROW_ROUTE(app, "/archives/page/<uint>/")(handler_archives);
     CROW_ROUTE(app, "/archives/")(std::bind(handler_archives, 1));
     CROW_ROUTE(app, "/admin/")(handler_admin);
-    CROW_ROUTE(app, "/admin/article/page/<uint>/", handler_admin_article);
+    CROW_ROUTE(app, "/admin/article/page/<uint>/")(handler_admin_article);
     CROW_ROUTE(app, "/admin/article/")(std::bind(handler_admin_article, 1));
     crow::mustache::set_base("assets/admin/template/");
     return true;
