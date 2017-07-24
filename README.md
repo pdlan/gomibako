@@ -19,7 +19,7 @@ as gomibako(ゴミ箱) means dustbin in Japanese.
   - g++ 4.8 or higher version
   - clang 3.3 or higher version
   - Visual Studio 2013 or higher version
-- boost library (boost_date_time, boost_system)
+- boost library (boost_system)
 - CMake 3.1.0 or higher version
 - Following libraries (as git submodules)
   - [Crow](https://github.com/ipkn/crow)

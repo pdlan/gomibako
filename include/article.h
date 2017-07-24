@@ -48,11 +48,13 @@ public:
     bool edit_article(const std::string &id, const std::string &title, time_t timestamp, 
                       const std::set<std::string> &tags, const std::string &content);
     void sort_metadata();
+    inline const std::map<std::string, int> & get_tags() {return this->tags;}
     void apply_filter(const Filter &filter, std::vector<std::string> &ids) const;
     void apply_filters(const std::vector<Filter> &filters, std::vector<std::string> &ids) const;
 private:
     TimeIDVector timestamp_id_pairs;
     IDMetadataMap id_metadata_map;
+    std::map<std::string, int> tags;
     std::string metadata_path, content_path;
     std::string generate_id(const std::string &title);
     std::string generate_filename(const std::string &id);

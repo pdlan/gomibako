@@ -37,6 +37,16 @@ bool ArticleManager::load_metadata() {
         this->timestamp_id_pairs.push_back(std::make_pair(metadata.timestamp, metadata.id));
     }
     sort_metadata();
+    this->tags.clear();
+    for (auto &&i : this->id_metadata_map) {
+        for (auto &&tag : i.second.tags) {
+            if (this->tags.count(tag)) {
+                ++this->tags[tag];
+            } else {
+                this->tags[tag] = 1;
+            }
+        }
+    }
     return true;
 }
 
