@@ -4,11 +4,12 @@
 #include <iostream>
 #include <map>
 #include <sstream>
+#include <iomanip>
 #include <set>
 #include <functional>
 #include <ctime>
+#include <cstring>
 #include <yaml-cpp/yaml.h>
-#include <boost/date_time/posix_time/posix_time.hpp>
 
 namespace gomibako {
 struct ArticleMetadata {
@@ -78,7 +79,6 @@ namespace YAML {
 template<>
 struct convert<gomibako::ArticleMetadata> {
     static Node encode(const gomibako::ArticleMetadata &rhs) {
-        using namespace boost::posix_time;
         Node node;
         node["id"] = rhs.id;
         node["title"] = rhs.title;
@@ -88,12 +88,13 @@ struct convert<gomibako::ArticleMetadata> {
             tags.push_back(i);
         }
         node["tags"] = tags;
-        node["time"] = to_iso_string(from_time_t(rhs.timestamp));
+        std::ostringstream os;
+        os << std::put_time(localtime(&rhs.timestamp), "%Y%m%dT%H%M%S");
+        node["time"] = os.str();
         return node;
     }
     
     static bool decode(const Node &node, gomibako::ArticleMetadata &rhs) {
-        using namespace boost::posix_time;
         if (!node.IsMap()) {
             return false;
         }
@@ -114,11 +115,14 @@ struct convert<gomibako::ArticleMetadata> {
             }
             rhs.tags.insert(it->as<std::string>());
         }
-        ptime pt = from_iso_string(node["time"].as<std::string>());
-        if (pt.is_special()) {
+        tm tmb;
+        memset((void *)&tmb, 0, sizeof(tmb));
+        std::istringstream is(node["time"].as<std::string>());
+        is >> std::get_time(&tmb, "%Y%m%dT%H%M%S");
+        if (!is) {
             return false;
         }
-        rhs.timestamp = to_time_t(pt);
+        rhs.timestamp = mktime(&tmb);
         return true;
     }
 };

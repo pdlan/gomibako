@@ -8,7 +8,6 @@
 #include <ctime>
 #include <cstdio>
 #include <yaml-cpp/yaml.h>
-#include <boost/date_time/posix_time/posix_time.hpp>
 #include <crow.h>
 #include "util/yaml.h"
 #include "gomibako.h"
