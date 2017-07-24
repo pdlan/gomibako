@@ -103,6 +103,14 @@ crow::response handler_archives(int page) {
     return crow::response(out.str());
 }
 
+crow::response handler_tags() {
+    Gomibako &gomibako = Gomibako::get_instance();
+    ostringstream out;
+    gomibako.get_theme()->render_tags(out, gomibako.get_article_manager()->get_tags(),
+                                      gomibako.get_site_information(), gomibako.get_url_maker());
+    return crow::response(out.str());
+}
+
 crow::response handler_admin() {
     crow::json::wvalue ctx;
     ctx["title"] = "Home | Dashboard";

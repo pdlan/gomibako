@@ -23,7 +23,8 @@ R"(<!DOCTYPE html>
         <header id="header">
             <a href=")" << url_maker->url_index() << R"(" id="site_name">)" << site_information.name << R"(</a>
             <nav>
-                <a href=")" << url_maker->url_archives() << R"(">Archives</a>)";
+                <a href=")" << url_maker->url_archives() << R"(">Archives</a>)" << R"(
+                <a href=")" << url_maker->url_tags() << R"(">Tags</a>)";
     for (auto &&page: *site_information.pages) {
         out << "<a href=\"" << url_maker->url_custom_page(page.id) << "\">" << page.title << "</a>";
     }

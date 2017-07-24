@@ -158,3 +158,7 @@ std::string URLMaker::url_custom_page(const std::string &id) {
     os << site_url << "/page/c" << id;
     return os.str(); 
 }
+
+std::string URLMaker::url_tags() {
+    return site_url + "/tags/";
+}

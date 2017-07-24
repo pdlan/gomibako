@@ -92,6 +92,7 @@ bool Gomibako::initialize(const std::string &config_filename) {
     CROW_ROUTE(app, "/tag/<string>/")(std::bind(handler_tag, placeholders::_1, 1));
     CROW_ROUTE(app, "/archives/page/<uint>/")(handler_archives);
     CROW_ROUTE(app, "/archives/")(std::bind(handler_archives, 1));
+    CROW_ROUTE(app, "/tags/")(handler_tags);
     CROW_ROUTE(app, "/admin/")(handler_admin);
     CROW_ROUTE(app, "/admin/article/page/<uint>/")(handler_admin_article);
     CROW_ROUTE(app, "/admin/article/")(std::bind(handler_admin_article, 1));

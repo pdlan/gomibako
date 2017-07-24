@@ -37,6 +37,8 @@ public:
                         const SiteInformation &, std::shared_ptr<URLMaker>)> render_tag;
     std::function<void (std::ostringstream &, const CustomPage &, const SiteInformation &,
                         std::shared_ptr<URLMaker>)> render_custom_page;
+    std::function<void (std::ostringstream &, const std::map<std::string, int> &,
+                        const SiteInformation &, std::shared_ptr<URLMaker>)> render_tags;
     std::function<void (std::ostringstream &, int code, const SiteInformation &,
                         std::shared_ptr<URLMaker>)> render_error;
     bool load();

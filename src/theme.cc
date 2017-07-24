@@ -42,6 +42,9 @@ bool Theme::load() {
          int, int, const SiteInformation &, std::shared_ptr<URLMaker>);
     typedef void (*RenderCustomPage)
         (std::ostringstream &, const CustomPage &, const SiteInformation &, std::shared_ptr<URLMaker>);
+    typedef void (*RenderTags)
+        (std::ostringstream &, const std::map<std::string, int> &tags,
+         const SiteInformation &, std::shared_ptr<URLMaker>);
     typedef void (*RenderError)
         (std::ostringstream &, int code, const SiteInformation &, std::shared_ptr<URLMaker>);
 #ifdef _WIN32
@@ -55,6 +58,7 @@ bool Theme::load() {
     RenderTag render_tag = (RenderTag)DLSYM(this->handle, "render_tag");
     RenderArchives render_archives = (RenderArchives)DLSYM(this->handle, "render_archives");
     RenderCustomPage render_custom_page = (RenderCustomPage)DLSYM(this->handle, "render_custom_page");
+    RenderTags render_tags = (RenderTags)DLSYM(this->handle, "render_tags");
     RenderError render_error = (RenderError)DLSYM(this->handle, "render_error");
 #undef DLSYM
     if (!init_theme ||
@@ -63,6 +67,7 @@ bool Theme::load() {
         !render_tag ||
         !render_archives ||
         !render_custom_page ||
+        !render_tags ||
         !render_error) {
         return false;
     }
@@ -71,6 +76,7 @@ bool Theme::load() {
     this->render_tag = render_tag;
     this->render_archives = render_archives;
     this->render_custom_page = render_custom_page;
+    this->render_tags = render_tags;
     this->render_error = render_error;
     return init_theme(this->config);
 }

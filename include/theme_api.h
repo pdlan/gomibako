@@ -47,6 +47,7 @@ public:
     virtual std::string url_archives(int page = 1);
     virtual std::string url_static(const std::string &path);
     virtual std::string url_custom_page(const std::string &id);
+    virtual std::string url_tags();
 private:
     std::string site_url;
 };

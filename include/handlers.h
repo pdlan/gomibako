@@ -10,6 +10,7 @@ crow::response handler_custom_page(const std::string &id_encoded);
 crow::response handler_page(int page);
 crow::response handler_archives(int page);
 crow::response handler_tag(const std::string &tag_encoded, int page);
+crow::response handler_tags();
 crow::response handler_admin();
 crow::response handler_admin_article(int page);
 
