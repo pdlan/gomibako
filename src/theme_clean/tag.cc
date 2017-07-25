@@ -12,8 +12,11 @@ extern"C" void render_tag(ostringstream &out, const vector<ArticleMetadata> &met
                           const vector<ostringstream> &content, const std::string &tag,
                           int page, int pages, const SiteInformation &site_information,
                           shared_ptr<URLMaker> url_maker) {
-    header(out, site_information, url_maker, site_information.name);
-    out << R"(<ol id="posts">)";
+    ostringstream title;
+    title << tag << " | " << site_information.name;
+    header(out, site_information, url_maker, title.str());
+    out << "<h2>Tag: " << tag << "</h2>"
+        << R"(<ol id="posts">)";
     for (size_t i = 0; i < content.size(); ++i) {
         out <<
 R"(

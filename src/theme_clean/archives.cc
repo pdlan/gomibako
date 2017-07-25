@@ -11,7 +11,7 @@ using namespace gomibako;
 extern"C" void render_archives(ostringstream &out, const vector<ArticleMetadata> &metadata,
                                int page, int pages, const SiteInformation &site_information,
                                shared_ptr<URLMaker> url_maker) {
-    header(out, site_information, url_maker, site_information.name);
+    header(out, site_information, url_maker, "Archives | " + site_information.name);
     int prev_year;
     for (size_t i = 0; i < metadata.size(); ++i) {
         tm *_tm = localtime(&metadata[i].timestamp);

@@ -1,7 +1,7 @@
 {{> header.html}}
-            <li class="active"><a href="/admin/article/">Article</a></li>
+            <li><a href="/admin/article/">Article</a></li>
             <li><a href="/admin/page/">Page</a></li>
-            <li><a href="/admin/draft/">Draft</a></li>
+            <li class="active"><a href="/admin/draft/">Draft</a></li>
             <li><a href="/admin/config/">Configuration</a></li>
           </ul>
         </div>
@@ -10,45 +10,43 @@
     <div class="container-fluid" id=main>
       <div class="row">
         <div class="col-md-10 col-md-offset-1">
-          <div class="panel panel-default" id="articles">
+          <div class="panel panel-default" id="drafts">
             <div class="panel-heading">
-              <span class="panel-title">Articles</span>
-              <a id="new-article" style="float: right;" data-toggle="modal" data-target="#modal-new-article">New article</a>
+              <span class="panel-title">Drafts</span>
+              <a id="new-draft" style="float: right;" data-toggle="modal" data-target="#modal-new-draft">New draft</a>
             </div>
             <table class="table panel-body">
               {{#article}}
               <tr data-id="{{id_encoded}}">
                 <td class="col-md-2">{{time}}</td>
-                <td class="col-md-6 col-md-offset-2">
-                  <a href="/article/{{id_encoded}}/">{{title}}</a>
-                </td>
+                <td class="col-md-6 col-md-offset-2">{{title}}</td>
                 <td class="col-md-2 col-md-offset-8">
-                  <a class="move" data-id="{{id_encoded}}">Move to Drafts</a>
+                  <a class="publish" data-id="{{id_encoded}}">Publish</a>
                 </td>
                 <td class="col-md-1 col-md-offset-10">
-                  <a class="edit-article" data-id="{{id_encoded}}">Edit</a>
+                  <a class="edit-draft" data-id="{{id_encoded}}">Edit</a>
                 </td>
                 <td class="col-md-1 col-md-offset-11">
-                  <a class="delete-article" data-id="{{id_encoded}}">Delete</a>
+                  <a class="delete-draft" data-id="{{id_encoded}}">Delete</a>
                 </td>
               </tr>
               {{/article}}
             </table>
             <div class="panel-footer">
-              {{#has_prev}}<a href="/admin/article/page/{{prev_page}}/">Previous</a>{{/has_prev}}
+              {{#has_prev}}<a href="/admin/draft/page/{{prev_page}}/">Previous</a>{{/has_prev}}
               {{#no_prev}}<span>Previous</span>{{/no_prev}}
-              {{#has_next}}<a style="float: right;" href="/admin/article/page/{{next_page}}/">Next</a>{{/has_next}}
+              {{#has_next}}<a style="float: right;" href="/admin/draft/page/{{next_page}}/">Next</a>{{/has_next}}
               {{#no_next}}<span style="float: right;">Next</span>{{/no_next}}
             </div>
           </div>
         </div>
       </div>
-      <div id="modal-new-article" class="modal fade" tabindex="-1" role="dialog" data-backdrop="false" aria-labelledby="newArticleLabel">
+      <div id="modal-new-draft" class="modal fade" tabindex="-1" role="dialog" data-backdrop="false" aria-labelledby="newDraftLabel">
         <div class="modal-dialog modal-lg" role="document">
           <div class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="newArticleLabel">New article</h4>
+            <h4 class="modal-title" id="newDraftLabel">New draft</h4>
             </div>
             <form class="modal-body form-horizontal">
               <div class="form-group" id="new-title-group">
@@ -77,18 +75,17 @@
               </div>
             </form>
             <div class="modal-footer">
-              <button id="new-save" type="button" class="btn btn-default">Save As Draft</button>
-              <button id="new-publish" type="button" class="btn btn-primary">Publish</button>
+              <button id="new-submit" type="button" class="btn btn-primary">Submit</button>
             </div>
           </div>
         </div>
       </div>
-      <div id="modal-edit-article" class="modal fade" tabindex="-1" role="dialog" data-backdrop="false" aria-labelledby="editArticleLabel">
+      <div id="modal-edit-draft" class="modal fade" tabindex="-1" role="dialog" data-backdrop="false" aria-labelledby="editDraftLabel">
         <div class="modal-dialog modal-lg" role="document">
           <div class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="editArticleLabel">Edit article</h4>
+            <h4 class="modal-title" id="editDraftLabel">Edit draft</h4>
             </div>
             <form class="modal-body form-horizontal">
               <div class="form-group" id="edit-title-group">
@@ -122,19 +119,49 @@
           </div>
         </div>
       </div>
-      <div id="modal-delete" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="deleteLabel">
+      <div id="modal-delete" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="publishLabel">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="deleteLabel">Delete article</h4>
+            <h4 class="modal-title" id="deleteLabel">Delete draft</h4>
             </div>
             <div class="modal-body">
-              <div>Are you sure to delete this article?</div>
-              <div id="alert-failure" style="display: none;" class="alert alert-danger" role="alert">Failed to delete this article.</div>
+              <div>Are you sure to delete this draft?</div>
+              <div id="alert-failure" style="display: none;" class="alert alert-danger" role="alert">Failed to delete this draft.</div>
             </div>
             <div class="modal-footer">
-              <button id="delete-article" type="button" class="btn btn-danger">Delete</button>
+              <button id="delete-draft" type="button" class="btn btn-danger">Delete</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="modal-publish" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="publishLabel">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="publishLabel">Publish draft</h4>
+            </div>
+            <div class="modal-body">
+              <div>What will the publish time of this article be?</div>
+              <form class="form" id="time">
+                <div class="radio">
+                  <label>
+                    <input type="radio" name="time" value="now" checked>
+                    Now
+                  </label>
+                </div>
+                <div class="radio">
+                  <label>
+                    <input type="radio" name="time" value="notnow">
+                      When this draft was created.
+                </label>
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button id="publish" type="button" class="btn btn-primary">Publish</button>
             </div>
           </div>
         </div>

@@ -6,6 +6,10 @@
 #include <set>
 #include <memory>
 #include <functional>
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#endif
 #include "article.h"
 #include "url.h"
 
@@ -46,7 +50,11 @@ public:
 private:
     std::string path;
     ThemeConfiguration config;
+#ifdef _WIN32
+	HMODULE handle;
+#else
     void *handle;
+#endif
 };
 }
 #endif

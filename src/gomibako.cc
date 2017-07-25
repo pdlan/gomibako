@@ -72,6 +72,10 @@ bool Gomibako::initialize(const std::string &config_filename) {
         {"css/style.css", "text/css"},
         {"js/bootstrap.min.js", "text/javascript"},
         {"js/jquery.min.js", "text/javascript"},
+        {"js/article.js", "text/javascript"},
+        {"js/draft.js", "text/javascript"},
+        {"js/page.js", "text/javascript"},
+        {"js/config.js", "text/javascript"},
         {"fonts/glyphicons-halflings-regular.eot", "application/vnd.ms-fontobject"},
         {"fonts/glyphicons-halflings-regular.ttf", "application/font-sfnt"},
         {"fonts/glyphicons-halflings-regular.woff2", "font/woff2"},
@@ -96,6 +100,18 @@ bool Gomibako::initialize(const std::string &config_filename) {
     CROW_ROUTE(app, "/admin/")(handler_admin);
     CROW_ROUTE(app, "/admin/article/page/<uint>/")(handler_admin_article);
     CROW_ROUTE(app, "/admin/article/")(std::bind(handler_admin_article, 1));
+    CROW_ROUTE(app, "/admin/article/new/").methods("POST"_method)(handler_admin_article_new);
+    CROW_ROUTE(app, "/admin/article/edit").methods("POST"_method)(handler_admin_article_edit);
+    CROW_ROUTE(app, "/admin/article/delete/<string>/")(handler_admin_article_delete);
+    CROW_ROUTE(app, "/admin/article/json/<string>/")(handler_admin_article_json);
+    CROW_ROUTE(app, "/admin/article/move/<string>/")(handler_admin_article_move);
+    CROW_ROUTE(app, "/admin/draft/page/<uint>/")(handler_admin_draft);
+    CROW_ROUTE(app, "/admin/draft/")(std::bind(handler_admin_draft, 1));
+    CROW_ROUTE(app, "/admin/draft/new/").methods("POST"_method)(handler_admin_draft_new);
+    CROW_ROUTE(app, "/admin/draft/edit").methods("POST"_method)(handler_admin_draft_edit);
+    CROW_ROUTE(app, "/admin/draft/delete/<string>/")(handler_admin_draft_delete);
+    CROW_ROUTE(app, "/admin/draft/json/<string>/")(handler_admin_draft_json);
+    CROW_ROUTE(app, "/admin/draft/publish/").methods("POST"_method)(handler_admin_draft_publish);
     crow::mustache::set_base("assets/admin/template/");
     return true;
 }

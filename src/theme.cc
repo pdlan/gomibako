@@ -1,6 +1,7 @@
 #include <string>
 #include <iostream>
 #ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #else
 #include <dlfcn.h>
@@ -17,7 +18,7 @@ Theme::Theme(const std::string &path) {
 
 bool Theme::load() {
 #ifdef _WIN32
-    void *_handle = LoadLibrary(this->path.c_str());
+    HMODULE _handle = LoadLibrary(this->path.c_str());
 #else
     void *_handle = dlopen(this->path.c_str(), RTLD_LAZY);
 #endif

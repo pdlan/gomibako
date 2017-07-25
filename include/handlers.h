@@ -13,6 +13,17 @@ crow::response handler_tag(const std::string &tag_encoded, int page);
 crow::response handler_tags();
 crow::response handler_admin();
 crow::response handler_admin_article(int page);
+crow::response handler_admin_article_new(const crow::request &req);
+crow::response handler_admin_article_edit(const crow::request &req);
+crow::response handler_admin_article_delete(const std::string &id);
+crow::response handler_admin_article_json(const std::string &id_encoded);
+crow::response handler_admin_article_move(const std::string &id_encoded);
+crow::response handler_admin_draft(int page);
+crow::response handler_admin_draft_new(const crow::request &req);
+crow::response handler_admin_draft_edit(const crow::request &req);
+crow::response handler_admin_draft_delete(const std::string &id_encoded);
+crow::response handler_admin_draft_json(const std::string &id_encoded);
+crow::response handler_admin_draft_publish(const crow::request &req);
 
 struct ErrorHandler {
     struct context {};

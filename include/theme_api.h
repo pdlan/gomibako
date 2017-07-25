@@ -2,6 +2,7 @@
 #define GOMIBAKO_INCLUDE_THEME_API_H
 #include <string>
 #include <map>
+#include <memory>
 #include <vector>
 #include <set>
 

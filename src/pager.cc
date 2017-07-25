@@ -27,3 +27,15 @@ Filter Pager::get_filter(int page, int &pages) {
         std::copy(ids.cbegin() + begin, ids.cbegin() + end, out.begin());
     };
 }
+
+void gomibako::get_pagination(const TimeIDVector &ids, const IDMetadataMap &metadata, TimeIDVector &out,
+                    const std::string &id, int items_per_page, int &page, int &pages) {
+    size_t size = ids.size();
+    pages = ceil(double(size) / items_per_page);
+    page = 0;
+    for (size_t i = 0; i < ids.size(); ++i) {
+        if (ids[i].second == id) {
+            page = ceil((i + 1) / (double)items_per_page);
+        }
+    }
+}
