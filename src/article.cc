@@ -184,10 +184,12 @@ bool ArticleManager::edit_article(const std::string &id, const std::string &titl
     if (it == this->id_metadata_map.end()) {
         return false;
     }
-    auto it2 = std::find(this->timestamp_id_pairs.begin(),
-                         this->timestamp_id_pairs.end(),
-                         std::make_pair(it->second.timestamp, it->second.id));
-    std::ofstream fs(it->second.filename);
+    auto it2 = std::find_if(this->timestamp_id_pairs.begin(),
+                            this->timestamp_id_pairs.end(),
+                            [&id] (const std::pair<time_t, std::string> &p) {
+                                return p.second == id;
+                            });
+    std::ofstream fs(this->content_path + it->second.filename);
     if (!fs) {
         return false;
     }
@@ -283,6 +285,15 @@ void PageManager::sort_pages() {
     });
 }
 
+std::string PageManager::add_page(int order, const std::string &title,
+                                  const std::string &content) {
+    std::string id = generate_id(title);
+    this->pages.push_back({order, title, id, content});
+    sort_pages();
+    save_pages();
+    return id;
+}
+
 bool PageManager::get_page(const std::string &id, CustomPage &page) const {
     auto it = this->pages.begin();
     while (it != this->pages.end()) {
@@ -290,6 +301,7 @@ bool PageManager::get_page(const std::string &id, CustomPage &page) const {
             page = *it;
             return true;
         }
+        ++it;
     }
     return false;
 }
@@ -304,6 +316,8 @@ bool PageManager::edit_page(const std::string &id, int order, const std::string 
     }
     it->title = title;
     it->content = content;
+    it->order = order;
+    sort_pages();
     return save_pages();
 }
 
@@ -339,6 +353,25 @@ bool PageManager::delete_page(const std::string &id) {
         return false;
     }
     this->pages.erase(it);
-    this->sort_pages();
+    sort_pages();
     return save_pages();
+}
+
+std::string PageManager::generate_id(const std::string &title) {
+    if (std::count_if(this->pages.begin(), this->pages.end(), [&title] (const CustomPage &page) {
+        return page.id == title;
+    }) == 0) {
+        return title;
+    }
+    std::ostringstream ss;
+    for (int i = 1; ; ++i) {
+        ss.str("");
+        ss << title << "-" << i;
+        if (std::count_if(this->pages.begin(), this->pages.end(), [&ss] (const CustomPage &page) {
+            return page.id == ss.str();
+        }) == 0) {
+            break;
+        }
+    }
+    return ss.str();
 }

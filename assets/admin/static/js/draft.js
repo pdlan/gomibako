@@ -125,6 +125,7 @@ function edit_show() {
         $('#edit-content').summernote('code', data.content);
     });
     $('#modal-edit-draft').modal('show');
+    edit_id = id;
 }
 
 function publish() {

@@ -1,6 +1,6 @@
 {{> header.html}}
-            <li class="active"><a href="/admin/article/">Article</a></li>
-            <li><a href="/admin/page/">Page</a></li>
+            <li><a href="/admin/article/">Article</a></li>
+            <li class="active"><a href="/admin/page/">Page</a></li>
             <li><a href="/admin/draft/">Draft</a></li>
             <li><a href="/admin/config/">Configuration</a></li>
           </ul>
@@ -10,63 +10,48 @@
     <div class="container-fluid" id=main>
       <div class="row">
         <div class="col-md-10 col-md-offset-1">
-          <div class="panel panel-default" id="articles">
+          <div class="panel panel-default" id="pages">
             <div class="panel-heading">
-              <span class="panel-title">Articles</span>
-              <a id="new-article" style="float: right;" data-toggle="modal" data-target="#modal-new-article">New article</a>
+              <span class="panel-title">Pages</span>
+              <a id="new-page" style="float: right;" data-toggle="modal" data-target="#modal-new-page">New page</a>
             </div>
             <table class="table panel-body">
-              {{#article}}
+              {{#page}}
               <tr data-id="{{id_encoded}}">
-                <td class="col-md-2">{{time}}</td>
-                <td class="col-md-6 col-md-offset-2">
-                  <a href="/article/{{id_encoded}}/">{{title}}</a>
-                </td>
-                <td class="col-md-2 col-md-offset-8">
-                  <a class="move" data-id="{{id_encoded}}">Move to Drafts</a>
+                <td class="col-md-1">No. {{order}}</td>
+                <td class="col-md-9 col-md-offset-1">
+                  <a href="/page/c{{id_encoded}}/">{{title}}</a>
                 </td>
                 <td class="col-md-1 col-md-offset-10">
-                  <a class="edit-article" data-id="{{id_encoded}}">Edit</a>
+                  <a class="edit-page" data-id="{{id_encoded}}">Edit</a>
                 </td>
                 <td class="col-md-1 col-md-offset-11">
-                  <a class="delete-article" data-id="{{id_encoded}}">Delete</a>
+                  <a class="delete-page" data-id="{{id_encoded}}">Delete</a>
                 </td>
               </tr>
-              {{/article}}
+              {{/page}}
             </table>
-            <div class="panel-footer">
-              {{#has_prev}}<a href="/admin/article/page/{{prev_page}}/">Previous</a>{{/has_prev}}
-              {{#no_prev}}<span>Previous</span>{{/no_prev}}
-              {{#has_next}}<a style="float: right;" href="/admin/article/page/{{next_page}}/">Next</a>{{/has_next}}
-              {{#no_next}}<span style="float: right;">Next</span>{{/no_next}}
-            </div>
           </div>
         </div>
       </div>
-      <div id="modal-new-article" class="modal fade" tabindex="-1" role="dialog" data-backdrop="false" aria-labelledby="newArticleLabel">
+      <div id="modal-new-page" class="modal fade" tabindex="-1" role="dialog" data-backdrop="false" aria-labelledby="newPageLabel">
         <div class="modal-dialog modal-lg" role="document">
           <div class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="newArticleLabel">New article</h4>
+            <h4 class="modal-title" id="newPageLabel">New page</h4>
             </div>
             <form class="modal-body form-horizontal">
-              <div class="form-group">
+              <div class="form-group" id="new-title-group">
                 <label for="new-title" class="col-md-1 control-label">Title</label>
                 <div class="col-md-11">
                   <input type="text" class="form-control" id="new-title" placeholder="Title">
                 </div>
               </div>
               <div class="form-group">
-                <label for="new-view-tags" class="col-md-1 control-label">Tags</label>
-                <div class="col-md-8">
-                  <p id="new-view-tags" class="form-control-static"></p>
-                </div>
+                <label for="new-order" class="col-md-1 control-label">Order</label>
                 <div class="col-md-2">
-                  <input type="text" class="form-control" id="new-tag">
-                </div>
-                <div class="col-md-1">
-                  <button type="button" class="btn btn-default" id="new-add-tag">Add</button>
+                  <input type="number" class="form-control" id="new-order" value="{{new_order}}">
                 </div>
               </div>
               <div class="form-group">
@@ -77,18 +62,17 @@
               </div>
             </form>
             <div class="modal-footer">
-              <button id="new-save" type="button" class="btn btn-default">Save As Draft</button>
               <button id="new-publish" type="button" class="btn btn-primary">Publish</button>
             </div>
           </div>
         </div>
       </div>
-      <div id="modal-edit-article" class="modal fade" tabindex="-1" role="dialog" data-backdrop="false" aria-labelledby="editArticleLabel">
+      <div id="modal-edit-page" class="modal fade" tabindex="-1" role="dialog" data-backdrop="false" aria-labelledby="editPageLabel">
         <div class="modal-dialog modal-lg" role="document">
           <div class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="editArticleLabel">Edit article</h4>
+            <h4 class="modal-title" id="editPageLabel">Edit page</h4>
             </div>
             <form class="modal-body form-horizontal">
               <div class="form-group" id="edit-title-group">
@@ -98,15 +82,9 @@
                 </div>
               </div>
               <div class="form-group">
-                <label for="edit-view-tags" class="col-md-1 control-label">Tags</label>
-                <div class="col-md-8">
-                  <p id="edit-view-tags" class="form-control-static"></p>
-                </div>
+                <label for="edit-order" class="col-md-1 control-label">Order</label>
                 <div class="col-md-2">
-                  <input type="text" class="form-control" id="edit-tag">
-                </div>
-                <div class="col-md-1">
-                  <button type="button" class="btn btn-default" id="edit-add-tag">Add</button>
+                  <input type="number" class="form-control" id="edit-order">
                 </div>
               </div>
               <div class="form-group">
@@ -127,14 +105,14 @@
           <div class="modal-content">
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="deleteLabel">Delete article</h4>
+            <h4 class="modal-title" id="deleteLabel">Delete page</h4>
             </div>
             <div class="modal-body">
-              <div>Are you sure to delete this article?</div>
-              <div id="alert-failure" style="display: none;" class="alert alert-danger" role="alert">Failed to delete this article.</div>
+              <div>Are you sure to delete this page?</div>
+              <div id="alert-failure" style="display: none;" class="alert alert-danger" role="alert">Failed to delete this page.</div>
             </div>
             <div class="modal-footer">
-              <button id="delete-article" type="button" class="btn btn-danger">Delete</button>
+              <button id="delete-page" type="button" class="btn btn-danger">Delete</button>
             </div>
           </div>
         </div>

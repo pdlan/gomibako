@@ -24,6 +24,11 @@ crow::response handler_admin_draft_edit(const crow::request &req);
 crow::response handler_admin_draft_delete(const std::string &id_encoded);
 crow::response handler_admin_draft_json(const std::string &id_encoded);
 crow::response handler_admin_draft_publish(const crow::request &req);
+crow::response handler_admin_page();
+crow::response handler_admin_page_new(const crow::request &req);
+crow::response handler_admin_page_edit(const crow::request &req);
+crow::response handler_admin_page_delete(const std::string &id_encoded);
+crow::response handler_admin_page_json(const std::string &id_encoded);
 
 struct ErrorHandler {
     struct context {};

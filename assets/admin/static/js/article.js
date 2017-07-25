@@ -138,6 +138,7 @@ function edit_show() {
         edit_refresh_tags();
         $('#edit-content').summernote('code', data.content);
     });
+    edit_id = id;
     $('#modal-edit-article').modal('show');
 }
 
@@ -155,7 +156,7 @@ $(document).ready(function() {
     $('#edit-submit').click(edit_submit);
     $('.move').click(move);
     $('.delete-article').click(function() {
-        var delete_id = decodeURI($(this).attr('data-id'));
+        delete_id = decodeURI($(this).attr('data-id'));
         $('#alert-failure').css('display', 'none');
         $('#modal-delete').modal('show');
     });

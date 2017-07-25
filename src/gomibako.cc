@@ -101,17 +101,22 @@ bool Gomibako::initialize(const std::string &config_filename) {
     CROW_ROUTE(app, "/admin/article/page/<uint>/")(handler_admin_article);
     CROW_ROUTE(app, "/admin/article/")(std::bind(handler_admin_article, 1));
     CROW_ROUTE(app, "/admin/article/new/").methods("POST"_method)(handler_admin_article_new);
-    CROW_ROUTE(app, "/admin/article/edit").methods("POST"_method)(handler_admin_article_edit);
+    CROW_ROUTE(app, "/admin/article/edit/").methods("POST"_method)(handler_admin_article_edit);
     CROW_ROUTE(app, "/admin/article/delete/<string>/")(handler_admin_article_delete);
     CROW_ROUTE(app, "/admin/article/json/<string>/")(handler_admin_article_json);
     CROW_ROUTE(app, "/admin/article/move/<string>/")(handler_admin_article_move);
     CROW_ROUTE(app, "/admin/draft/page/<uint>/")(handler_admin_draft);
     CROW_ROUTE(app, "/admin/draft/")(std::bind(handler_admin_draft, 1));
     CROW_ROUTE(app, "/admin/draft/new/").methods("POST"_method)(handler_admin_draft_new);
-    CROW_ROUTE(app, "/admin/draft/edit").methods("POST"_method)(handler_admin_draft_edit);
+    CROW_ROUTE(app, "/admin/draft/edit/").methods("POST"_method)(handler_admin_draft_edit);
     CROW_ROUTE(app, "/admin/draft/delete/<string>/")(handler_admin_draft_delete);
     CROW_ROUTE(app, "/admin/draft/json/<string>/")(handler_admin_draft_json);
     CROW_ROUTE(app, "/admin/draft/publish/").methods("POST"_method)(handler_admin_draft_publish);
+    CROW_ROUTE(app, "/admin/page/")(handler_admin_page);
+    CROW_ROUTE(app, "/admin/page/new/").methods("POST"_method)(handler_admin_page_new);
+    CROW_ROUTE(app, "/admin/page/edit/").methods("POST"_method)(handler_admin_page_edit);
+    CROW_ROUTE(app, "/admin/page/delete/<string>/")(handler_admin_page_delete);
+    CROW_ROUTE(app, "/admin/page/json/<string>/")(handler_admin_page_json);
     crow::mustache::set_base("assets/admin/template/");
     return true;
 }

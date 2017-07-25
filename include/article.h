@@ -67,6 +67,7 @@ public:
     bool save_pages();
     void sort_pages();
     bool delete_page(const std::string &id);
+    std::string add_page(int order, const std::string &title, const std::string &content);
     inline std::vector<CustomPage> * const get_pages() {return &this->pages;};
     bool get_page(const std::string &id, CustomPage &page) const;
     bool edit_page(const std::string &id, int order, const std::string &title,
@@ -74,6 +75,7 @@ public:
 private:
     std::string pages_path;
     std::vector<CustomPage> pages;
+    std::string generate_id(const std::string &title);
 };
 }
 

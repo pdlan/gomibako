@@ -230,6 +230,10 @@ crow::response handler_admin_article_draft_edit(shared_ptr<ArticleManager> manag
     if (title.empty()) {
         return crow::response(400);
     }
+    ArticleMetadata metadata;
+    if (!manager->get_metadata(id, metadata)) {
+        return crow::response(400);
+    }
     set<string> tags;
     for (auto &&tag : tags_vector) {
         if (!tags.count(tag)) {
@@ -239,7 +243,7 @@ crow::response handler_admin_article_draft_edit(shared_ptr<ArticleManager> manag
     if (manager->edit_article(
         id,
         title,
-        time(nullptr),
+        metadata.timestamp,
         tags,
         content
     )) {
@@ -388,6 +392,105 @@ crow::response handler_admin_draft_publish(const crow::request &req) {
     empty);
     out << "/admin/article/page/" << page << "/";
     return crow::response(out.str());
+}
+
+crow::response handler_admin_page() {
+    Gomibako &gomibako = Gomibako::get_instance();
+    shared_ptr<PageManager> page_manager = gomibako.get_page_manager();
+    crow::json::wvalue ctx;
+    ctx["page_js"] = true;
+    ctx["editor"] = true;
+    const vector<CustomPage> *pages = page_manager->get_pages();
+    for (size_t i = 0; i < pages->size(); ++i) {
+        const CustomPage &page = (*pages)[i];
+        ctx["page"][i]["id"] = page.id;
+        ctx["page"][i]["id_encoded"] = urlencode(page.id.c_str(), page.id.length());
+        ctx["page"][i]["title"] = page.title;
+        ctx["page"][i]["order"] = page.order;
+        ctx["page"][i]["content"] = page.content;
+    }
+    ctx["new_order"] = (*pages)[pages->size() - 1].order + 1;
+    return crow::response(crow::mustache::load("page.html").render(ctx));
+}
+
+crow::response handler_admin_page_new(const crow::request &req) {
+    YAML::Node node;
+    try {
+        node = YAML::Load(req.body);
+    } catch (const YAML::Exception &e) {
+        return crow::response(400);
+    }
+    int order;
+    string title, content;
+    if (!extract_yaml_map(node,
+        make_pair("order", &order),
+        make_pair("title", &title),
+        make_pair("content", &content)
+    )) {
+        return crow::response(400);
+    }
+    if (title.empty()) {
+        return crow::response(400);
+    }
+    Gomibako &gomibako = Gomibako::get_instance();
+    shared_ptr<PageManager> page_manager = gomibako.get_page_manager();
+    const string &id = page_manager->add_page(order, title, content);
+    return crow::response(id);
+}
+
+crow::response handler_admin_page_edit(const crow::request &req) {
+    YAML::Node node;
+    try {
+        node = YAML::Load(req.body);
+    } catch (const YAML::Exception &e) {
+        return crow::response(400);
+    }
+    int order;
+    string id, title, content;
+    if (!extract_yaml_map(node,
+        make_pair("order", &order),
+        make_pair("id", &id),
+        make_pair("title", &title),
+        make_pair("content", &content)
+    )) {
+        return crow::response(400);
+    }
+    if (title.empty()) {
+        return crow::response(400);
+    }
+    Gomibako &gomibako = Gomibako::get_instance();
+    shared_ptr<PageManager> page_manager = gomibako.get_page_manager();
+    if (page_manager->edit_page(id, order, title, content)) {
+        return crow::response("ok");
+    } else {
+        return crow::response(400);
+    }
+}
+
+crow::response handler_admin_page_delete(const string &id_encoded) {
+    Gomibako &gomibako = Gomibako::get_instance();
+    shared_ptr<PageManager> page_manager = gomibako.get_page_manager();
+    if (page_manager->delete_page(urldecode(id_encoded))) {
+        return crow::response("ok");
+    } else {
+        return crow::response(400);
+    }
+}
+
+crow::response handler_admin_page_json(const string &id_encoded) {
+    Gomibako &gomibako = Gomibako::get_instance();
+    shared_ptr<PageManager> page_manager = gomibako.get_page_manager();
+    const string &id = urldecode(id_encoded);
+    CustomPage page;
+    if (!page_manager->get_page(id, page)) {
+        return crow::response(400);
+    }
+    crow::json::wvalue json;
+    json["id"] = id;
+    json["title"] = page.title;
+    json["content"] = page.content;
+    json["order"] = page.order;
+    return json;
 }
 
 void ErrorHandler::after_handle(crow::request &req, crow::response &res, ErrorHandler::context &ctx) {
