@@ -1,5 +1,6 @@
 #include <string>
 #include <iostream>
+#include <ctime>
 #include "gomibako.h"
 #include "handlers.h"
 #include "util/yaml.h"
@@ -122,6 +123,11 @@ bool Gomibako::initialize(const std::string &config_filename) {
 }
 
 bool Gomibako::start() {
+    this->start_time = time(nullptr);
     this->app.port(this->port).run();
     return true;
+}
+
+time_t Gomibako::get_uptime() const {
+    return time(nullptr) - this->start_time;
 }

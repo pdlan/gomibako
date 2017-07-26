@@ -1,4 +1,5 @@
 #include <string>
+#include <unordered_map>
 #include <map>
 #include <iostream>
 #include <algorithm>
@@ -58,7 +59,7 @@ void ArticleManager::sort_metadata() {
 }
 
 bool ArticleManager::get_metadata(const std::string &id, ArticleMetadata &metadata) const {
-    auto it = this->id_metadata_map.find(id);
+    auto &&it = this->id_metadata_map.find(id);
     if (it == this->id_metadata_map.end()) {
         return false;
     } else {
@@ -71,7 +72,7 @@ bool ArticleManager::get_metadata(const std::vector<std::string> &ids,
                                   std::vector<ArticleMetadata> &metadata) const {
     metadata.resize(ids.size());
     for (size_t i = 0; i < ids.size(); ++i) {
-        auto it = this->id_metadata_map.find(ids[i]);
+        auto &&it = this->id_metadata_map.find(ids[i]);
         if (it == this->id_metadata_map.end()) {
             return false;
         }
@@ -82,7 +83,7 @@ bool ArticleManager::get_metadata(const std::vector<std::string> &ids,
 
 bool ArticleManager::get_content(const std::string &id, std::ostringstream &out) const {
     using namespace std;
-    auto it = this->id_metadata_map.find(id);
+    auto &&it = this->id_metadata_map.find(id);
     if (it == this->id_metadata_map.end()) {
         return false;
     }
@@ -100,7 +101,7 @@ bool ArticleManager::get_content(const std::vector<std::string> &ids,
     using namespace std;
     out.resize(ids.size());
     for (size_t i = 0; i < ids.size(); ++i) {
-        auto it = this->id_metadata_map.find(ids[i]);
+        auto &&it = this->id_metadata_map.find(ids[i]);
         if (it == this->id_metadata_map.end()) {
             return false;
         }
@@ -158,7 +159,7 @@ std::string ArticleManager::add_article(const std::string &title, const std::str
 }
 
 bool ArticleManager::delete_article(const std::string &id, bool delete_file) {
-    auto it = this->id_metadata_map.find(id);
+    auto &&it = this->id_metadata_map.find(id);
     if (it == this->id_metadata_map.end()) {
         return false;
     }
@@ -180,15 +181,15 @@ bool ArticleManager::delete_article(const std::string &id, bool delete_file) {
 
 bool ArticleManager::edit_article(const std::string &id, const std::string &title, time_t timestamp, 
                                   const std::set<std::string> &tags, const std::string &content) {
-    auto it = this->id_metadata_map.find(id);
+    auto &&it = this->id_metadata_map.find(id);
     if (it == this->id_metadata_map.end()) {
         return false;
     }
-    auto it2 = std::find_if(this->timestamp_id_pairs.begin(),
-                            this->timestamp_id_pairs.end(),
-                            [&id] (const std::pair<time_t, std::string> &p) {
-                                return p.second == id;
-                            });
+    auto &&it2 = std::find_if(this->timestamp_id_pairs.begin(),
+                              this->timestamp_id_pairs.end(),
+                              [&id] (const std::pair<time_t, std::string> &p) {
+                                  return p.second == id;
+                              });
     std::ofstream fs(this->content_path + it->second.filename);
     if (!fs) {
         return false;
@@ -308,7 +309,7 @@ bool PageManager::get_page(const std::string &id, CustomPage &page) const {
 
 bool PageManager::edit_page(const std::string &id, int order, const std::string &title,
                             const std::string &content) {
-    auto it = std::find_if(this->pages.begin(), this->pages.end(), [&id](const CustomPage &p) {
+    auto &&it = std::find_if(this->pages.begin(), this->pages.end(), [&id](const CustomPage &p) {
         return p.id == id;
     });
     if (it == this->pages.end()) {
@@ -346,7 +347,7 @@ bool PageManager::save_pages() {
 }
 
 bool PageManager::delete_page(const std::string &id) {
-    auto it = std::find_if(this->pages.begin(), this->pages.end(), [&id](const CustomPage &p) {
+    auto &&it = std::find_if(this->pages.begin(), this->pages.end(), [&id](const CustomPage &p) {
         return p.id == id;
     });
     if (it == this->pages.end()) {

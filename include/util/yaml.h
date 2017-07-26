@@ -16,7 +16,7 @@ inline bool extract_yaml_map(const YAML::Node &node, const std::pair<const char 
     try {
         *arg.second = node[arg.first].template as<T>();
         return true;
-    } catch(const YAML::BadConversion &e) {
+    } catch (const YAML::BadConversion &e) {
         return false;
     }
 }
@@ -30,7 +30,7 @@ inline bool extract_yaml_map(const YAML::Node &node,
     }
     try {
         *arg_first.second = node[arg_first.first].template as<First>();
-    } catch(const YAML::BadConversion &e) {
+    } catch (const YAML::BadConversion &e) {
         return false;
     }
     return extract_yaml_map(node, args_rest...);

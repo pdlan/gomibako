@@ -1,7 +1,7 @@
 #ifndef GOMIBAKO_INCLUDE_FILTER_H
 #define GOMIBAKO_INCLUDE_FILTER_H
 #include <functional>
-#include <map>
+#include <unordered_map>
 #include <vector>
 #include "article.h"
 
@@ -15,7 +15,7 @@ public:
 
     Filter get_filter(const T &arg) {
         return [=] (const TimeIDVector &ids, const IDMetadataMap &metadata, TimeIDVector &out) {
-            auto it = this->cache.find(arg);
+            auto &&it = this->cache.find(arg);
             if (it == this->cache.end()) {
                 TimeIDVector *new_ids = new TimeIDVector;
                 for (auto &&i : ids) {
@@ -41,7 +41,7 @@ public:
         clear_cache();
     }
 private:
-    std::map<T, TimeIDVector *> cache;
+    std::unordered_map<T, TimeIDVector *> cache;
     std::function<bool (const T &arg, const ArticleMetadata &metadata)> condition;
 };
 

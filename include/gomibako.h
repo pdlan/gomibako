@@ -34,6 +34,7 @@ public:
     inline std::shared_ptr<URLMaker> get_url_maker() const {return this->url_maker;}
     inline const SiteInformation & get_site_information() const {return this->site_information;};
     inline const std::map<std::string, std::string> & get_users() const {return this->users;}
+    time_t get_uptime() const;
 private:
     std::shared_ptr<Theme> theme;
     std::shared_ptr<URLMaker> url_maker;
@@ -51,6 +52,7 @@ private:
     uint16_t port;
     std::map<std::string, std::string> users;
     crow::App<BasicAuth, ErrorHandler> app;
+    time_t start_time;
 };
 }
 #endif

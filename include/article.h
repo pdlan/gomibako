@@ -2,7 +2,7 @@
 #define GOMIBAKO_INCLUDE_ARTICLE_H
 #include <string>
 #include <iostream>
-#include <map>
+#include <unordered_map>
 #include <sstream>
 #include <iomanip>
 #include <set>
@@ -28,7 +28,7 @@ struct CustomPage {
 };
 
 typedef std::vector<std::pair<time_t, std::string>> TimeIDVector;
-typedef std::map<std::string, ArticleMetadata> IDMetadataMap;
+typedef std::unordered_map<std::string, ArticleMetadata> IDMetadataMap;
 typedef std::function<void (const TimeIDVector &, const IDMetadataMap &, TimeIDVector &)> Filter;
 
 class ArticleManager {

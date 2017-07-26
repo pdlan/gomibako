@@ -124,6 +124,17 @@ crow::response handler_tags() {
 crow::response handler_admin() {
     crow::json::wvalue ctx;
     ctx["title"] = "Home | Dashboard";
+    time_t uptime = Gomibako::get_instance().get_uptime();
+    int day, hour, minute, second;
+    day = uptime / (3600 * 24);
+    uptime -= day * 3600 * 24;
+    hour = uptime / 3600;
+    uptime -= hour * 3600;
+    minute = uptime / 60;
+    second = uptime - minute * 60;
+    ostringstream os;
+    os << day << " days " << hour << " hours " << minute << " minutes " << second << " seconds";
+    ctx["uptime"] = os.str();
     return crow::response(crow::mustache::load("index.html").render(ctx));
 }
 
@@ -144,10 +155,11 @@ crow::response handler_admin_article_draft(shared_ptr<ArticleManager> manager,
     ctx["editor"] = true;
     if (strcmp(tpl, "article.html") == 0) {
         ctx["article_js"] = true;
+        ctx["title"] = "Article | Dashboard";
     } else {
         ctx["draft_js"] = true;
+        ctx["title"] = "Draft | Dashboard";
     }
-    ctx["title"] = "Article | Dashboard";
     for (size_t i = 0; i < metadata.size(); ++i) {
         crow::json::wvalue article;
         ctx["article"][i]["id"] = metadata[i].id;
@@ -400,6 +412,7 @@ crow::response handler_admin_page() {
     crow::json::wvalue ctx;
     ctx["page_js"] = true;
     ctx["editor"] = true;
+    ctx["title"] = "Page | Dashboard";
     const vector<CustomPage> *pages = page_manager->get_pages();
     for (size_t i = 0; i < pages->size(); ++i) {
         const CustomPage &page = (*pages)[i];
