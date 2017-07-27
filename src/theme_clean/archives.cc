@@ -20,13 +20,14 @@ extern"C" void render_archives(ostringstream &out, const vector<ArticleMetadata>
             prev_year = year;
             out << "<h2>" << year << "</h2>\n<ol id=\"posts\">";
         }
+        if (year != prev_year) {
+            out << "</ol>\n<h2>" << year << "</h2>\n<ol id=\"posts\">";
+            prev_year = year;
+        }
         out << R"(<li><span class="meta">)" << put_time(_tm, "%b %d") << R"(</span><a href=")"
             << url_maker->url_article(metadata[i].id) << "\">" << metadata[i].title << "</a></li>\n";
         if (i == (metadata.size() - 1)) {
             out << "</ol>";
-        } else if (year != prev_year) {
-            out << "</ol>\n<h2>" << year << "</h2>\n<<ol id=\"posts\">";
-            prev_year = year;
         }
     }
     out <<R"(    <div id="pagination">)";
