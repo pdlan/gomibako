@@ -83,11 +83,7 @@ std::string urlencode(const char *data, size_t length) {
 }
 
 inline char get_digit(char c) {
-    if (c >= '0' && c <= '9') {
-        return c - '0';
-    } else {
-        return c - 'A' + 10;
-    }
+    return c >= '0' && c <= '9' ? c - '0' : c - 'A' + 10;
 }
 
 std::string urldecode(const std::string &data) {
@@ -95,6 +91,9 @@ std::string urldecode(const std::string &data) {
     ostringstream os;
     for (size_t i = 0; i < data.length(); ++i) {
         if (data[i] == '%') {
+            if (i > data.length() - 2) {
+                break;
+            }
             char digit1 = get_digit(data[i+1]);
             char digit2 = get_digit(data[i+2]);
             os << char(digit1 * 16 + digit2);
@@ -109,14 +108,18 @@ std::string urldecode(const std::string &data) {
 std::string URLMaker::url_article(const std::string &id) {
     using namespace std;
     ostringstream os;
-    os << site_url << "/article/" << urlencode(id.c_str(), id.length()) << "/";
+    os << site_url << "/article/" << urlencode(id.c_str(), id.length());
     return os.str(); 
 }
 
 std::string URLMaker::url_page(int page) {
     using namespace std;
     ostringstream os;
-    os << site_url << "/page/" << page << "/";
+    if (page != 1) {
+        os << site_url << "/page/" << page;
+    } else {
+        os << site_url << "/";
+    }
     return os.str(); 
 }
 
@@ -126,7 +129,7 @@ std::string URLMaker::url_tag(const std::string &tag, int page) {
     ostringstream os;
     os << site_url << "/tag/" << urlencode(tag.c_str(), tag.length()) << "/";
     if (page != 1) {
-        os << "page/" << page << "/";
+        os << "page/" << page;
     }
     return os.str(); 
 }
@@ -160,5 +163,5 @@ std::string URLMaker::url_custom_page(const std::string &id) {
 }
 
 std::string URLMaker::url_tags() {
-    return site_url + "/tags/";
+    return site_url + "/tags";
 }

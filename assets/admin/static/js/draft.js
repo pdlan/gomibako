@@ -44,7 +44,7 @@ function new_submit() {
         $('#new-title-group').addClass('has-error');
         return;
     }
-    $.post('/admin/draft/new/', JSON.stringify({
+    $.post('/admin/draft/new', JSON.stringify({
         'title': $('#new-title').val(),
         'content': $('#new-content').summernote('code'),
         'tags': new_tags
@@ -94,7 +94,7 @@ function edit_submit() {
         $('#edit-title-group').addClass('has-error');
         return;
     }
-    $.post('/admin/draft/edit/', JSON.stringify({
+    $.post('/admin/draft/edit', JSON.stringify({
         'id': edit_id,
         'title': $('#edit-title').val(),
         'content': $('#edit-content').summernote('code'),
@@ -106,7 +106,7 @@ function edit_submit() {
 }
 
 function delete_draft() {
-    $.get('/admin/draft/delete/' + delete_id + '/', function(data, status) {
+    $.get('/admin/draft/delete/' + delete_id, function(data, status) {
         if (data != 'ok') {
             $('#alert-failure').css('display', 'block');
         } else {
@@ -118,7 +118,7 @@ function delete_draft() {
 function edit_show() {
     var id_encoded = $(this).attr('data-id');
     var id = decodeURI(id_encoded);
-    $.get('/admin/draft/json/' + id_encoded + '/', function(data, status) {
+    $.get('/admin/draft/json/' + id_encoded, function(data, status) {
         $('#edit-title').val(data.title);
         edit_tags = data.tags;
         edit_refresh_tags();
@@ -129,7 +129,7 @@ function edit_show() {
 }
 
 function publish() {
-    $.post('/admin/draft/publish/', JSON.stringify({
+    $.post('/admin/draft/publish', JSON.stringify({
         'id': publish_id,
         'now': $('input[type=\'radio\']:checked').val() == 'now'
     }), function(data, status, xhr) {

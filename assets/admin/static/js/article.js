@@ -43,7 +43,7 @@ function new_publish() {
         $('#new-title-group').addClass('has-error');
         return;
     }
-    $.post('/admin/article/new/', JSON.stringify({
+    $.post('/admin/article/new', JSON.stringify({
         'title': $('#new-title').val(),
         'content': $('#new-content').summernote('code'),
         'tags': new_tags
@@ -58,7 +58,7 @@ function new_save() {
         $('#new-title-group').addClass('has-error');
         return;
     }
-    $.post('/admin/draft/new/', JSON.stringify({
+    $.post('/admin/draft/new', JSON.stringify({
         'title': $('#new-title').val(),
         'content': $('#new-content').summernote('code'),
         'tags': new_tags
@@ -108,7 +108,7 @@ function edit_submit() {
         $('#edit-title-group').addClass('has-error');
         return;
     }
-    $.post('/admin/article/edit/', JSON.stringify({
+    $.post('/admin/article/edit', JSON.stringify({
         'id': edit_id,
         'title': $('#edit-title').val(),
         'content': $('#edit-content').summernote('code'),
@@ -120,7 +120,7 @@ function edit_submit() {
 }
 
 function delete_article() {
-    $.get('/admin/article/delete/' + delete_id + '/', function(data, status) {
+    $.get('/admin/article/delete/' + delete_id, function(data, status) {
         if (data != 'ok') {
             $('#alert-failure').css('display', 'block');
         } else {
@@ -132,7 +132,7 @@ function delete_article() {
 function edit_show() {
     var id_encoded = $(this).attr('data-id');
     var id = decodeURI(id_encoded);
-    $.get('/admin/article/json/' + id_encoded + '/', function(data, status) {
+    $.get('/admin/article/json/' + id_encoded, function(data, status) {
         $('#edit-title').val(data.title);
         edit_tags = data.tags;
         edit_refresh_tags();
@@ -143,7 +143,7 @@ function edit_show() {
 }
 
 function move() {
-    $.get('/admin/article/move/' + $(this).attr('data-id') + '/', function(data, status) {
+    $.get('/admin/article/move/' + $(this).attr('data-id'), function(data, status) {
         window.location.href = data;
     });
 }

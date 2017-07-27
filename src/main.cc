@@ -12,6 +12,26 @@
 
 using namespace gomibako;
 
+bool has_file(const char *filename) {
+    std::ifstream fs(filename);
+    if (fs) {
+        fs.close();
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool write_to_file(const char *filename, const char *content) {
+    std::ofstream fs(filename);
+    if (!fs) {
+        return false;
+    }
+    fs << content;
+    fs.close();
+    return true;
+}
+
 void print_help() {
     std::cout <<
 R"(Gomibako is a simple C++ blog program.
@@ -59,17 +79,24 @@ void install() {
         << YAML::Key << "password" << YAML::Value << password_hash
         << YAML::EndMap << YAML::EndSeq
         << YAML::EndMap;
-    ofstream fs("config.yaml");
-    if (!fs) {
+    if (!write_to_file("config.yaml", out.c_str())) {
         cout << "Failed to write to configuration file.\n";
+        return;
     }
-    fs << out.c_str();
-    fs.close();
+    if (!has_file("articles/metadata.yaml")) {
+        write_to_file("articles/metadata.yaml", "[]");
+    }
+    if (!has_file("drafts/metadata.yaml")) {
+        write_to_file("drafts/metadata.yaml", "[]");
+    }
+    if (!has_file("pages.yaml")) {
+        write_to_file("pages.yaml", "[]");
+    }
     cout << "config.yaml has been generated. run \"./gomibako run\" to start gomibako.\n";
 }
 
 int main(int argc, const char **argv) {
-    if (argc != 2 && argc != 3) {
+    if (argc != 2 && argc != 3 && argc != 4) {
         print_help();
         return 0;
     }

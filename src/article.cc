@@ -29,13 +29,17 @@ bool ArticleManager::load_metadata() {
     } catch (const YAML::BadFile &e) {
         return false;
     }
-    if (!root.IsSequence()) {
+    if (!root.IsSequence() && !root.IsNull()) {
         return false;
     }
-    for (YAML::const_iterator it = root.begin(); it != root.end(); ++it) {
-        ArticleMetadata metadata = it->as<ArticleMetadata>();
-        this->id_metadata_map[metadata.id] = metadata;
-        this->timestamp_id_pairs.push_back(std::make_pair(metadata.timestamp, metadata.id));
+    this->id_metadata_map.clear();
+    this->timestamp_id_pairs.clear();
+    if (root.IsSequence()) {
+        for (YAML::const_iterator it = root.begin(); it != root.end(); ++it) {
+            ArticleMetadata metadata = it->as<ArticleMetadata>();
+            this->id_metadata_map[metadata.id] = metadata;
+            this->timestamp_id_pairs.push_back(std::make_pair(metadata.timestamp, metadata.id));
+        }
     }
     sort_metadata();
     this->tags.clear();
@@ -261,20 +265,23 @@ bool PageManager::load_pages() {
     } catch (const YAML::BadFile &e) {
         return false;
     }
-    if (!root.IsSequence()) {
+    if (!root.IsSequence() && !root.IsNull()) {
         return false;
     }
-    for (YAML::const_iterator it = root.begin(); it != root.end(); ++it) {
-        CustomPage page;
-        if (!extract_yaml_map(*it,
-            make_pair("order", &page.order),
-            make_pair("id", &page.id),
-            make_pair("title", &page.title),
-            make_pair("content", &page.content)
-            )) {
-            return false;
+    this->pages.clear();
+    if (root.IsSequence()) {
+        for (YAML::const_iterator it = root.begin(); it != root.end(); ++it) {
+            CustomPage page;
+            if (!extract_yaml_map(*it,
+                make_pair("order", &page.order),
+                make_pair("id", &page.id),
+                make_pair("title", &page.title),
+                make_pair("content", &page.content)
+                )) {
+                return false;
+            }
+            this->pages.push_back(page);
         }
-        this->pages.push_back(page);
     }
     sort_pages();
     return true;
@@ -296,7 +303,7 @@ std::string PageManager::add_page(int order, const std::string &title,
 }
 
 bool PageManager::get_page(const std::string &id, CustomPage &page) const {
-    auto it = this->pages.begin();
+    auto &&it = this->pages.begin();
     while (it != this->pages.end()) {
         if (it->id == id) {
             page = *it;

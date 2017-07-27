@@ -20,7 +20,7 @@
               <tr data-id="{{id_encoded}}">
                 <td class="col-md-2">{{time}}</td>
                 <td class="col-md-6 col-md-offset-2">
-                  <a href="/article/{{id_encoded}}/">{{title}}</a>
+                  <a href="/article/{{id_encoded}}">{{title}}</a>
                 </td>
                 <td class="col-md-2 col-md-offset-8">
                   <a class="move" data-id="{{id_encoded}}">Move to Drafts</a>
@@ -35,9 +35,9 @@
               {{/article}}
             </table>
             <div class="panel-footer">
-              {{#has_prev}}<a href="/admin/article/page/{{prev_page}}/">Previous</a>{{/has_prev}}
+              {{#has_prev}}<a href="/admin/article/page/{{prev_page}}">Previous</a>{{/has_prev}}
               {{#no_prev}}<span>Previous</span>{{/no_prev}}
-              {{#has_next}}<a style="float: right;" href="/admin/article/page/{{next_page}}/">Next</a>{{/has_next}}
+              {{#has_next}}<a style="float: right;" href="/admin/article/page/{{next_page}}">Next</a>{{/has_next}}
               {{#no_next}}<span style="float: right;">Next</span>{{/no_next}}
             </div>
           </div>

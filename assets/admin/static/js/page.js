@@ -6,12 +6,12 @@ function new_publish() {
         $('#new-title-group').addClass('has-error');
         return;
     }
-    $.post('/admin/page/new/', JSON.stringify({
+    $.post('/admin/page/new', JSON.stringify({
         'title': $('#new-title').val(),
         'content': $('#new-content').summernote('code'),
         'order': $('#new-order').val()
     }), function(data, status, xhr) {
-        window.location.href = '/admin/page/';
+        window.location.href = '/admin/page';
         return;
     }, 'text');
 }
@@ -21,19 +21,19 @@ function edit_submit() {
         $('#edit-title-group').addClass('has-error');
         return;
     }
-    $.post('/admin/page/edit/', JSON.stringify({
+    $.post('/admin/page/edit', JSON.stringify({
         'id': edit_id,
         'title': $('#edit-title').val(),
         'content': $('#edit-content').summernote('code'),
         'order': $('#edit-order').val()
     }), function(data, status, xhr) {
-        window.location.href = '/admin/page/';
+        window.location.href = '/admin/page';
         return;
     }, 'text');
 }
 
 function delete_page() {
-    $.get('/admin/page/delete/' + delete_id + '/', function(data, status) {
+    $.get('/admin/page/delete/' + delete_id, function(data, status) {
         if (data != 'ok') {
             $('#alert-failure').css('display', 'block');
         } else {
@@ -45,7 +45,7 @@ function delete_page() {
 function edit_show() {
     var id_encoded = $(this).attr('data-id');
     var id = decodeURI(id_encoded);
-    $.get('/admin/page/json/' + id_encoded + '/', function(data, status) {
+    $.get('/admin/page/json/' + id_encoded, function(data, status) {
         $('#edit-order').val(data.order);
         $('#edit-title').val(data.title);
         $('#edit-content').summernote('code', data.content);

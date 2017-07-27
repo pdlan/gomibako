@@ -422,7 +422,11 @@ crow::response handler_admin_page() {
         ctx["page"][i]["order"] = page.order;
         ctx["page"][i]["content"] = page.content;
     }
-    ctx["new_order"] = (*pages)[pages->size() - 1].order + 1;
+    if (pages->size() == 0) {
+        ctx["new_order"] = 1;
+    } else {
+        ctx["new_order"] = (*pages)[pages->size() - 1].order + 1;
+    }
     return crow::response(crow::mustache::load("page.html").render(ctx));
 }
 
