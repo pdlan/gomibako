@@ -287,6 +287,7 @@ crow::response handler_admin_article_draft_json(shared_ptr<ArticleManager> manag
     json["title"] = metadata.title;
     json["time"] = metadata.timestamp;
     size_t i = 0;
+    json["tags"] = crow::json::rvalue(crow::json::type::List);
     for (auto &&it = metadata.tags.begin(); it != metadata.tags.end(); ++it, ++i) {
         json["tags"][i] = *it;
     }
@@ -325,15 +326,24 @@ crow::response handler_admin_article(int page) {
 }
 
 crow::response handler_admin_article_new(const crow::request &req) {
-    return handler_admin_article_draft_new(Gomibako::get_instance().get_article_manager(), req);
+    crow::response res =
+        handler_admin_article_draft_new(Gomibako::get_instance().get_article_manager(), req);
+    Gomibako::get_instance().get_tag_filter()->clear_cache();
+    return res;
 }
 
 crow::response handler_admin_article_edit(const crow::request &req) {
-    return handler_admin_article_draft_edit(Gomibako::get_instance().get_article_manager(), req);
+    crow::response res =
+        handler_admin_article_draft_edit(Gomibako::get_instance().get_article_manager(), req);
+    Gomibako::get_instance().get_tag_filter()->clear_cache();
+    return res;
 }
 
 crow::response handler_admin_article_delete(const string &id_encoded) {
-    return handler_admin_article_draft_delete(Gomibako::get_instance().get_article_manager(), id_encoded);
+    crow::response res =
+        handler_admin_article_draft_delete(Gomibako::get_instance().get_article_manager(), id_encoded);
+    Gomibako::get_instance().get_tag_filter()->clear_cache();
+    return res;
 }
 
 crow::response handler_admin_article_json(const string &id_encoded) {

@@ -106,18 +106,22 @@ struct convert<gomibako::ArticleMetadata> {
               node["title"] && node["title"].IsScalar() &&
               node["filename"] && node["filename"].IsScalar() &&
               node["time"] && node["time"].IsScalar() &&
-              node["tags"] && node["tags"].IsSequence())) {
+              node["tags"])) {
             return false;
         }
         rhs.id = node["id"].as<std::string>();
         rhs.title = node["title"].as<std::string>();
         rhs.filename = node["filename"].as<std::string>();
         Node tags = node["tags"];
-        for (const_iterator it = tags.begin(); it != tags.end(); ++it) {
-            if (!it->IsScalar()) {
-                return false;
+        if (tags.IsSequence()) {
+            for (const_iterator it = tags.begin(); it != tags.end(); ++it) {
+                if (!it->IsScalar()) {
+                    return false;
+                }
+                rhs.tags.insert(it->as<std::string>());
             }
-            rhs.tags.insert(it->as<std::string>());
+        } else if (!tags.IsNull()) {
+            return false;
         }
         tm tmb;
         memset((void *)&tmb, 0, sizeof(tmb));

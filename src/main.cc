@@ -5,6 +5,7 @@
 #include <iostream>
 #include <ctime>
 #include <cstring>
+#include <yaml-cpp/yaml.h>
 #include "gomibako.h"
 #include "pager.h"
 #include "util/yaml.h"

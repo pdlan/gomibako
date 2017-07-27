@@ -29,7 +29,7 @@ public:
     inline std::shared_ptr<Pager> get_article_pager() const {return this->article_pager;}
     inline std::shared_ptr<Pager> get_tag_pager() const {return this->tag_pager;}
     inline std::shared_ptr<Pager> get_archives_pager() const {return this->archives_pager;}
-    inline std::shared_ptr<CachedFilter<std::string>> get_tag_filter() const {return this->tag_filter;}
+    inline std::shared_ptr<CachedFilter<std::string>> get_tag_filter() {return this->tag_filter;}
     inline std::shared_ptr<Theme> get_theme() const {return this->theme;}
     inline std::shared_ptr<URLMaker> get_url_maker() const {return this->url_maker;}
     inline const SiteInformation & get_site_information() const {return this->site_information;};
