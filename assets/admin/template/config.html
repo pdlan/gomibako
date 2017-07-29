@@ -1,0 +1,137 @@
+{{> header.html}}
+            <li><a href="/admin/article/">Article</a></li>
+            <li><a href="/admin/page/">Page</a></li>
+            <li><a href="/admin/draft/">Draft</a></li>
+            <li class="active"><a href="/admin/config/">Configuration</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <div class="container-fluid" id=main>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Configuration</h3>
+        </div>
+        <div class="panel-body">
+          <form class="form-horizontal">
+          <div class="form-group">
+            <label for="site-name" class="col-md-2 control-label">Site name</label>
+            <div class="col-md-10">
+              <input type="text" class="form-control" id="site-name" value="{{site-name}}">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="site-url" class="col-md-2 control-label">Site URL</label>
+            <div class="col-md-10">
+              <input type="text" class="form-control" id="site-url" value="{{site-url}}">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="site-description" class="col-md-2 control-label">Site description</label>
+            <div class="col-md-10">
+              <input type="text" class="form-control" id="site-description" value="{{site-description}}">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="ip" class="col-md-2 control-label">Bind IP</label>
+            <div class="col-md-10">
+              <input type="text" class="form-control" id="ip" value="{{ip}}">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="port" class="col-md-2 control-label">Port</label>
+            <div class="col-md-10">
+              <input type="number" class="form-control" id="port" value="{{port}}">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="theme" class="col-md-2 control-label">Theme</label>
+            <div class="col-md-10">
+              <input type="text" class="form-control" id="theme" value="{{theme}}">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-md-2 control-label">Administrators</label>
+            <div class="col-md-10">
+              <table id="users" class="table">
+                <tr>
+                  <th class="col-md-8">Username</th>
+                  <th class="col-md-4">Operations</th>
+                </tr>
+                {{#users}}
+                <tr data-username="{{username_encoded}}">
+                  <td class="col-md-8">{{username}}</td>
+                  <td class="col-md-2"><a data-username="{{username_encoded}}" class="change-password">Change password</a></td>
+                  <td class="col-md-2"><a data-username="{{username_encoded}}" class="delete-admin">Delete</a></td>
+                </tr>
+                {{/users}}
+                <script type="text/javascript">
+                  {{#users}}
+                  original_users.push(decodeURI("{{username_encoded}}"));
+                  {{/users}}
+                </script>
+              </table>
+              <button type="button" class="btn btn-default" id="new-admin">New administrator</button>
+            </div>
+          </div>
+          <div id="save-failure" style="display: none;" class="col-md-offset-2 alert alert-danger" role="alert">Failed to edit the configuration.</div>
+          <div id="save-success" style="display: none;" class="col-md-offset-2 alert alert-success" role="alert">Configuration has been updated successfully. You must restart Gomibako before the new configuration will take effect.</div>
+          <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+              <button type="button" id="submit" class="btn btn-primary">Save</button>
+            </div>
+          </div>
+          </form>
+        </div>
+      </div>
+      <div id="modal-changepwd" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="changepwdLabel">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="changepwdLabel">Change password</h4>
+            </div>
+            <form class="modal-body form-horizontal">
+              <div class="form-group">
+                <label for="new-password" class="col-md-3 control-label">New password</label>
+                <div class="col-md-9">
+                  <input type="password" class="form-control" id="new-password">
+                </div>
+              </div>
+            </form>
+            <div class="modal-footer">
+              <button id="change-password" type="button" class="btn btn-primary">Change</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="modal-newadmin" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="newadminLabel">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="newadminLabel">New administrator</h4>
+            </div>
+            <form class="modal-body form-horizontal">
+              <div class="form-group">
+                <label for="username" class="col-md-2 control-label">Username</label>
+                <div class="col-md-10">
+                  <input type="text" class="form-control" id="username">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="password" class="col-md-2 control-label">Password</label>
+                <div class="col-md-10">
+                  <input type="password" class="form-control" id="password">
+                </div>
+              </div>
+              <div id="newadmin-failure" style="display: none;" class="alert alert-danger" role="alert">There has already been an administrator whose username is the same.</div>
+            </form>
+            <div class="modal-footer">
+              <button id="create-admin" type="button" class="btn btn-primary">Create</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+{{> footer.html}}

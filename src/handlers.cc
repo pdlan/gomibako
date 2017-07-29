@@ -1,6 +1,7 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <list>
 #include <crow.h>
 #include "util/base64.h"
 #include "util/picosha2.h"
@@ -316,7 +317,7 @@ crow::response handler_admin_article_move(const string &id_encoded) {
             return get_pagination(ids, metadata, _out, new_id, 10, page, pages);
         },
     empty);
-    out << "/admin/draft/page/" << page << "/";
+    out << "/admin/draft/page/" << page;
     return crow::response(out.str());
 }
 
@@ -412,7 +413,7 @@ crow::response handler_admin_draft_publish(const crow::request &req) {
             return get_pagination(ids, metadata, _out, new_id, 10, page, pages);
         },
     empty);
-    out << "/admin/article/page/" << page << "/";
+    out << "/admin/article/page/" << page;
     return crow::response(out.str());
 }
 
@@ -518,6 +519,143 @@ crow::response handler_admin_page_json(const string &id_encoded) {
     json["content"] = page.content;
     json["order"] = page.order;
     return json;
+}
+
+crow::response handler_admin_config() {
+    Gomibako &gomibako = Gomibako::get_instance();
+    YAML::Node config;
+    try {
+        config = YAML::LoadFile(gomibako.get_config_filename());
+    } catch (const YAML::BadFile &e) {
+        return crow::response(500);
+    }
+    string site_name, site_url, site_description, ip, theme;
+    vector<map<string, string>> users;
+    int port;
+    if (!extract_yaml_map(
+        config,
+        make_pair("site-name", &site_name),
+        make_pair("site-url", &site_url),
+        make_pair("site-description", &site_description),
+        make_pair("ip", &ip),
+        make_pair("port", &port),
+        make_pair("theme", &theme),
+        make_pair("users", &users)
+    )) {
+        return crow::response(500);
+    }
+    crow::json::wvalue ctx;
+    ctx["config_js"] = true;
+    ctx["title"] = "Configuration | Dashboard";
+    ctx["site-name"] = site_name;
+    ctx["site-url"] = site_url;
+    ctx["site-description"] = site_description;
+    ctx["ip"] = ip;
+    ctx["port"] = port;
+    ctx["theme"] = theme;
+    ctx["users"] = crow::json::rvalue(crow::json::type::List);
+    for (size_t i = 0; i < users.size(); ++i) {
+        auto &&it = users[i].find("username");
+        if (it == users[i].end()) {
+            return crow::response(500);
+        }
+        ctx["users"][i]["username"] = it->second;
+        ctx["users"][i]["username_encoded"] = urlencode(it->second.c_str(), it->second.length());
+    }
+    return crow::response(crow::mustache::load("config.html").render(ctx));
+}
+
+crow::response handler_admin_config_edit(const crow::request &req) {
+    Gomibako &gomibako = Gomibako::get_instance();
+    YAML::Node node_req, node_orig;
+    try {
+        node_req = YAML::Load(req.body);
+        node_orig = YAML::LoadFile(gomibako.get_config_filename());
+    } catch (const YAML::Exception &e) {
+        return crow::response("failed");
+    }
+    vector<map<string, string>> users_orig, users;
+    if (!extract_yaml_map(node_orig, make_pair("users", &users_orig))) {
+        return crow::response("failed");
+    }
+    string site_name, site_url, site_description, ip, theme;
+    int port;
+    YAML::Node users_diff;
+    vector<map<string, string>> new_users;
+    vector<string> delete_users_vec;
+    set<string> delete_users;
+    if (!extract_yaml_map(
+        node_req,
+        make_pair("site-name", &site_name),
+        make_pair("site-url", &site_url),
+        make_pair("site-description", &site_description),
+        make_pair("ip", &ip),
+        make_pair("port", &port),
+        make_pair("theme", &theme)
+    ) || !node_req["users"]) {
+        return crow::response("failed");
+    }
+    users_diff = node_req["users"];
+    if (!extract_yaml_map(
+        users_diff,
+        make_pair("new", &new_users),
+        make_pair("delete", &delete_users_vec)
+    )) {
+        return crow::response("failed");
+    }
+    for (auto &&i : delete_users_vec) {
+        if (!delete_users.count(i)) {
+            delete_users.insert(i);
+        }
+    }
+    for (auto &&i : users_orig) {
+        auto &&it1 = i.find("username");
+        auto &&it2 = i.find("password");
+        if (it1 == i.end() || it2 == i.end()) {
+            return crow::response("failed");
+        }
+        if (!delete_users.count(it1->second)) {
+            users.push_back({
+                {"username", it1->second},
+                {"password", it2->second}
+            });
+        }
+    }
+    for (auto &&i : new_users) {
+        auto &&it1 = i.find("username");
+        auto &&it2 = i.find("password");
+        if (it1 == i.end() || it2 == i.end()) {
+            return crow::response("failed");
+        }
+        const string &username = it1->second;
+        string password_hash;
+        picosha2::hash256_hex_string(it2->second, password_hash);
+        if (find_if(users.begin(), users.end(), [&username] (const map<string, string> &p) {
+            return p.at("username") == username;
+        }) == users.end()) {
+            users.push_back({
+                {"username", username},
+                {"password", password_hash}
+            });
+        }
+    }
+    YAML::Emitter out;
+    out << YAML::BeginMap
+        << YAML::Key << "site-name" << YAML::Value << site_name
+        << YAML::Key << "site-url" << YAML::Value << site_url
+        << YAML::Key << "site-description" << YAML::Value << site_description
+        << YAML::Key << "ip" << YAML::Value << ip
+        << YAML::Key << "port" << YAML::Value << port
+        << YAML::Key << "theme" << YAML::Value << theme
+        << YAML::Key << "users" << YAML::Value << YAML::Node(users)
+        << YAML::EndMap;
+    ofstream fs(gomibako.get_config_filename());
+    if (!fs) {
+        return crow::response("failed");
+    }
+    fs << out.c_str();
+    fs.close();
+    return crow::response("success");
 }
 
 void ErrorHandler::after_handle(crow::request &req, crow::response &res, ErrorHandler::context &ctx) {

@@ -35,6 +35,7 @@ public:
     inline const SiteInformation & get_site_information() const {return this->site_information;};
     inline const std::map<std::string, std::string> & get_users() const {return this->users;}
     time_t get_uptime() const;
+    inline std::string get_config_filename() const {return this->config_filename;};
 private:
     std::shared_ptr<Theme> theme;
     std::shared_ptr<URLMaker> url_maker;
@@ -48,6 +49,7 @@ private:
     std::shared_ptr<StaticHandler> theme_static_handler;
     std::shared_ptr<StaticHandler> admin_static_handler;
     SiteInformation site_information;
+    std::string config_filename;
     std::string ip;
     uint16_t port;
     std::map<std::string, std::string> users;

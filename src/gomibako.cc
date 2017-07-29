@@ -21,6 +21,7 @@ bool Gomibako::initialize(const std::string &config_filename) {
         cerr << "No such file.\n";
         return false;
     }
+    this->config_filename = config_filename;
     string theme_path;
     std::vector<std::map<string, string>> _users;
     if (!extract_yaml_map(
@@ -118,6 +119,8 @@ bool Gomibako::initialize(const std::string &config_filename) {
     CROW_ROUTE(app, "/admin/page/edit").methods("POST"_method)(handler_admin_page_edit);
     CROW_ROUTE(app, "/admin/page/delete/<string>")(handler_admin_page_delete);
     CROW_ROUTE(app, "/admin/page/json/<string>")(handler_admin_page_json);
+    CROW_ROUTE(app, "/admin/config/")(handler_admin_config);
+    CROW_ROUTE(app, "/admin/config/edit").methods("POST"_method)(handler_admin_config_edit);
     crow::mustache::set_base("assets/admin/template/");
     return true;
 }

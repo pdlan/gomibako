@@ -3,20 +3,21 @@ as gomibako(ゴミ箱) means dustbin in Japanese.
 
 ## Features:
 
- -  No database.
+ -  No database
     - All data and configuration are storaged in memory or text files.
-    - It's very easy to create / edit / delete articles / pages mannualy.
- - In pure modern C++.
- - Very lightweight.
- - Simple and flexible theme system.
+    - It's very easy to create/edit/delete articles/drafts/pages mannualy.
+ - In pure modern C++
+ - Very lightweight
+ - Simple and flexible theme system
    - See include/theme_api.h for further information.
+ - Simple but practical dashboard
 
 ## How to Build
 
 ### Requirements
 
 - Modern C++ compiler with good C++11 support
-  - g++ 4.8 or higher version
+  - g++ 5.0 or higher version
   - clang 3.3 or higher version
   - Visual Studio 2013 or higher version
 - boost library (boost_system)
