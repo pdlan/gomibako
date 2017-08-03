@@ -658,11 +658,6 @@ crow::response handler_admin_config_edit(const crow::request &req) {
     return crow::response("success");
 }
 
-crow::response handler_admin_restart() {
-    Gomibako::get_instance().restart();
-    return crow::response("");
-}
-
 void ErrorHandler::after_handle(crow::request &req, crow::response &res, ErrorHandler::context &ctx) {
     Gomibako &gomibako = Gomibako::get_instance();
     shared_ptr<Theme> theme = gomibako.get_theme();
