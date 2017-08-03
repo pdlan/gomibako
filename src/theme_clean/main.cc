@@ -8,7 +8,7 @@ using namespace gomibako;
 
 string comment_html;
 
-extern"C" bool init(ThemeConfiguration &config) {
+extern"C" bool initialize(ThemeConfiguration &config) {
     config.articles_per_page = 10;
     config.articles_per_page_tag = 10;
     config.articles_per_page_archives = 10;
@@ -26,3 +26,5 @@ extern"C" bool init(ThemeConfiguration &config) {
     }
     return true;
 }
+
+extern"C" void finalize(void) {}

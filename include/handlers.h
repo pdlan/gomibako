@@ -32,7 +32,6 @@ crow::response handler_admin_page_delete(const std::string &id_encoded);
 crow::response handler_admin_page_json(const std::string &id_encoded);
 crow::response handler_admin_config();
 crow::response handler_admin_config_edit(const crow::request &req);
-crow::response handler_admin_restart();
 
 struct ErrorHandler {
     struct context {};

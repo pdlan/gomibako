@@ -50,7 +50,7 @@ bool Gomibako::initialize(const std::string &config_filename) {
         }
         this->users[it1->second] = it2->second;
     }
-    this->url_maker.reset(new URLMaker(this->site_information.url));
+    this->url_maker.reset(new SimpleURLMaker(this->site_information.url));
     this->theme.reset(new Theme("theme/" + theme_path));
     if (!this->theme->load()) {
         cerr << "Cannot load theme.\n";
@@ -125,7 +125,6 @@ bool Gomibako::initialize(const std::string &config_filename) {
     CROW_ROUTE(app, "/admin/page/json/<string>")(handler_admin_page_json);
     CROW_ROUTE(app, "/admin/config/")(handler_admin_config);
     CROW_ROUTE(app, "/admin/config/edit").methods("POST"_method)(handler_admin_config_edit);
-    CROW_ROUTE(app, "/admin/restart")(handler_admin_restart);
     crow::mustache::set_base("assets/admin/template/");
     return true;
 }

@@ -48,6 +48,7 @@ public:
     bool load();
     const ThemeConfiguration & get_configuration();
 private:
+    std::function<void (void)> finalize_theme;
     std::string path;
     ThemeConfiguration config;
 #ifdef _WIN32

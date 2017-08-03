@@ -11,10 +11,7 @@
 
 using namespace gomibako;
 
-Theme::Theme(const std::string &path) {
-    this->path = path;
-    this->handle = nullptr;
-}
+Theme::Theme(const std::string &_path) : path(_path), handle(nullptr) {}
 
 bool Theme::load() {
 #ifdef _WIN32
@@ -48,12 +45,13 @@ bool Theme::load() {
          const SiteInformation &, std::shared_ptr<URLMaker>);
     typedef void (*RenderError)
         (std::ostringstream &, int code, const SiteInformation &, std::shared_ptr<URLMaker>);
+    typedef void (*FinalizeTheme) (void);
 #ifdef _WIN32
 #define DLSYM GetProcAddress
 #else
 #define DLSYM dlsym
 #endif
-    InitTheme init_theme = (InitTheme)DLSYM(this->handle, "init");
+    InitTheme init_theme = (InitTheme)DLSYM(this->handle, "initialize");
     RenderArticle render_article = (RenderArticle)DLSYM(this->handle, "render_article");
     RenderPage render_page = (RenderPage)DLSYM(this->handle, "render_page");
     RenderTag render_tag = (RenderTag)DLSYM(this->handle, "render_tag");
@@ -61,8 +59,10 @@ bool Theme::load() {
     RenderCustomPage render_custom_page = (RenderCustomPage)DLSYM(this->handle, "render_custom_page");
     RenderTags render_tags = (RenderTags)DLSYM(this->handle, "render_tags");
     RenderError render_error = (RenderError)DLSYM(this->handle, "render_error");
+    FinalizeTheme finalize_theme = (FinalizeTheme)DLSYM(this->handle, "finalize");
 #undef DLSYM
     if (!init_theme ||
+        !finalize_theme ||
         !render_article ||
         !render_page ||
         !render_tag ||
@@ -72,6 +72,7 @@ bool Theme::load() {
         !render_error) {
         return false;
     }
+    this->finalize_theme = finalize_theme;
     this->render_article = render_article;
     this->render_page = render_page;
     this->render_tag = render_tag;
@@ -87,6 +88,7 @@ const ThemeConfiguration &Theme::get_configuration() {
 }
 
 Theme::~Theme() {
+    this->finalize_theme();
     if (this->handle) {
 #ifdef _WIN32
         FreeLibrary(this->handle);

@@ -4,6 +4,8 @@
 #include <sstream>
 #include "url.h"
 
+using namespace gomibako;
+
 std::string urlencode(const char *data, size_t length) {
     using namespace std;
     ostringstream os;
@@ -105,14 +107,14 @@ std::string urldecode(const std::string &data) {
     return os.str();
 }
 
-std::string URLMaker::url_article(const std::string &id) {
+std::string SimpleURLMaker::url_article(const std::string &id) {
     using namespace std;
     ostringstream os;
     os << site_url << "/article/" << urlencode(id.c_str(), id.length());
     return os.str(); 
 }
 
-std::string URLMaker::url_page(int page) {
+std::string SimpleURLMaker::url_page(int page) {
     using namespace std;
     ostringstream os;
     if (page != 1) {
@@ -123,8 +125,7 @@ std::string URLMaker::url_page(int page) {
     return os.str(); 
 }
 
-
-std::string URLMaker::url_tag(const std::string &tag, int page) {
+std::string SimpleURLMaker::url_tag(const std::string &tag, int page) {
     using namespace std;
     ostringstream os;
     os << site_url << "/tag/" << urlencode(tag.c_str(), tag.length()) << "/";
@@ -134,34 +135,34 @@ std::string URLMaker::url_tag(const std::string &tag, int page) {
     return os.str(); 
 }
 
-std::string URLMaker::url_index() {
+std::string SimpleURLMaker::url_index() {
     return this->site_url + "/";
 }
 
-std::string URLMaker::url_archives(int page) {
+std::string SimpleURLMaker::url_archives(int page) {
     using namespace std;
     ostringstream os;
     os << site_url << "/archives/";
     if (page != 1) {
-        os << "page/" << page << "/";
+        os << "page/" << page;
     }
     return os.str(); 
 }
 
-std::string URLMaker::url_static(const std::string &path) {
+std::string SimpleURLMaker::url_static(const std::string &path) {
     using namespace std;
     ostringstream os;
     os << site_url << "/static/" << path;
     return os.str(); 
 }
 
-std::string URLMaker::url_custom_page(const std::string &id) {
+std::string SimpleURLMaker::url_custom_page(const std::string &id) {
     using namespace std;
     ostringstream os;
     os << site_url << "/page/c" << id;
     return os.str(); 
 }
 
-std::string URLMaker::url_tags() {
+std::string SimpleURLMaker::url_tags() {
     return site_url + "/tags";
 }
