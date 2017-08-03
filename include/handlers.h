@@ -11,6 +11,7 @@ crow::response handler_page(int page);
 crow::response handler_archives(int page);
 crow::response handler_tag(const std::string &tag_encoded, int page);
 crow::response handler_tags();
+crow::response handler_feed();
 crow::response handler_admin();
 crow::response handler_admin_article(int page);
 crow::response handler_admin_article_new(const crow::request &req);
@@ -31,6 +32,7 @@ crow::response handler_admin_page_delete(const std::string &id_encoded);
 crow::response handler_admin_page_json(const std::string &id_encoded);
 crow::response handler_admin_config();
 crow::response handler_admin_config_edit(const crow::request &req);
+crow::response handler_admin_restart();
 
 struct ErrorHandler {
     struct context {};

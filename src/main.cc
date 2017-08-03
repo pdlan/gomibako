@@ -96,7 +96,7 @@ void install() {
     cout << "config.yaml has been generated. run \"./gomibako run\" to start gomibako.\n";
 }
 
-int main(int argc, const char **argv) {
+int main(int argc, char **argv) {
     if (argc != 2 && argc != 3 && argc != 4) {
         print_help();
         return 0;

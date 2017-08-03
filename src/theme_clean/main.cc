@@ -9,9 +9,9 @@ using namespace gomibako;
 string comment_html;
 
 extern"C" bool init(ThemeConfiguration &config) {
-    config.articles_per_page = 20;
-    config.articles_per_page_tag = 20;
-    config.articles_per_page_archives = 20;
+    config.articles_per_page = 10;
+    config.articles_per_page_tag = 10;
+    config.articles_per_page_archives = 10;
     config.static_directory = "assets";
     config.static_files  = {
         {"clean.css", "text/css"}

@@ -32,10 +32,10 @@ public:
     inline std::shared_ptr<CachedFilter<std::string>> get_tag_filter() {return this->tag_filter;}
     inline std::shared_ptr<Theme> get_theme() const {return this->theme;}
     inline std::shared_ptr<URLMaker> get_url_maker() const {return this->url_maker;}
-    inline const SiteInformation & get_site_information() const {return this->site_information;};
+    inline const SiteInformation & get_site_information() const {return this->site_information;}
     inline const std::map<std::string, std::string> & get_users() const {return this->users;}
     time_t get_uptime() const;
-    inline std::string get_config_filename() const {return this->config_filename;};
+    inline std::string get_config_filename() const {return this->config_filename;}
 private:
     std::shared_ptr<Theme> theme;
     std::shared_ptr<URLMaker> url_maker;

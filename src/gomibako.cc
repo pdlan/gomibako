@@ -1,6 +1,10 @@
 #include <string>
 #include <iostream>
 #include <ctime>
+#ifdef _WIN32
+#else
+#include <unistd.h>
+#endif
 #include "gomibako.h"
 #include "handlers.h"
 #include "util/yaml.h"
@@ -121,13 +125,14 @@ bool Gomibako::initialize(const std::string &config_filename) {
     CROW_ROUTE(app, "/admin/page/json/<string>")(handler_admin_page_json);
     CROW_ROUTE(app, "/admin/config/")(handler_admin_config);
     CROW_ROUTE(app, "/admin/config/edit").methods("POST"_method)(handler_admin_config_edit);
+    CROW_ROUTE(app, "/admin/restart")(handler_admin_restart);
     crow::mustache::set_base("assets/admin/template/");
     return true;
 }
 
 bool Gomibako::start() {
     this->start_time = time(nullptr);
-    this->app.port(this->port).run();
+    this->app.port(this->port).bindaddr(this->ip).run();
     return true;
 }
 
