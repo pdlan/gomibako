@@ -52,5 +52,6 @@ public:
 private:
     std::string directory;
     std::map<std::string, std::string> files;
+    static std::string get_mime_type(const std::string &filename);
 };
 #endif

@@ -6,7 +6,7 @@
 
 using namespace gomibako;
 
-std::string urlencode(const char *data, size_t length) {
+std::string gomibako::urlencode(const char *data, size_t length) {
     using namespace std;
     ostringstream os;
     for (size_t i = 0; i < length; ++i) {
@@ -88,7 +88,7 @@ inline char get_digit(char c) {
     return c >= '0' && c <= '9' ? c - '0' : c - 'A' + 10;
 }
 
-std::string urldecode(const std::string &data) {
+std::string gomibako::urldecode(const std::string &data) {
     using namespace std;
     ostringstream os;
     for (size_t i = 0; i < data.length(); ++i) {

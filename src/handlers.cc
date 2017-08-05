@@ -718,11 +718,14 @@ StaticHandler::StaticHandler(const string &_directory, const map<string, string>
     directory(_directory), files(_files) {}
 
 crow::response StaticHandler::handle(const string &filename) {
-    auto it = this->files.find(filename);
+    auto &&it = this->files.find(filename);
     if (it == this->files.end()) {
-        return crow::response(404);
+        it = this->files.find("*");
+        if (it == this->files.end()) {
+            return crow::response(404);
+        }
     }
-    const string &mime_type = it->second;
+    const string &mime_type = it->second == "auto" ? get_mime_type(filename) : it->second;
     ostringstream path;
     path << this->directory << "/" << filename;
     ifstream fs(path.str(), ios::binary);
@@ -741,4 +744,31 @@ crow::response StaticHandler::handle(const string &filename) {
     crow::response response(out);
     response.set_header("Content-Type", mime_type);
     return response;
+}
+
+string StaticHandler::get_mime_type(const string &filename) {
+    const map<string, string> MIMEType = {
+        {"txt", "text/plain"},
+        {"html", "text/html"},
+        {"htm", "text/html"},
+        {"css", "text/css"},
+        {"js", "application/javascript"},
+        {"jpg", "image/jpeg"},
+        {"jpeg", "image/jpeg"},
+        {"png", "image/png"},
+        {"gif", "image/gif"},
+        {"ico", "image/x-icon"},
+        {"xml", "application/xml"},
+        {"json", "application/json"}
+    };
+    size_t pos = filename.rfind('.');
+    if (pos == string::npos || pos == filename.length() - 1) {
+        return "application/octet-stream";
+    }
+    const string &ext = filename.substr(pos + 1);
+    auto &&it = MIMEType.find(ext);
+    if (it == MIMEType.cend()) {
+        return "application/octet-stream";
+    }
+    return it->second;
 }
