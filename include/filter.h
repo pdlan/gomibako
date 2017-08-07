@@ -35,6 +35,7 @@ public:
         for (auto &&i : this->cache) {
             delete i.second;
         }
+        this->cache.clear();
     }
 
     ~CachedFilter() {
