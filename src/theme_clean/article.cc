@@ -30,7 +30,7 @@ R"(<div class="post">
     R"(<div class="tags">
         Tagged in :)";
         for (auto &&tag : metadata.tags) {
-            out << R"(<a href=")" << url_maker->url_tag(tag) << "\">" << tag << "</a>";
+            out << R"(<a href=")" << url_maker->url_tag(tag) << "\">" << tag << "</a>\n";
         }
         out << "</div>";
     }
