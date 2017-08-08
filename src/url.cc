@@ -159,7 +159,7 @@ std::string SimpleURLMaker::url_static(const std::string &path) {
 std::string SimpleURLMaker::url_custom_page(const std::string &id) {
     using namespace std;
     ostringstream os;
-    os << site_url << "/page/c" << id;
+    os << site_url << "/page/c" << urlencode(id.c_str(), id.length());
     return os.str(); 
 }
 
