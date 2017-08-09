@@ -56,12 +56,15 @@ crow::response handler_page(int page) {
         return crow::response(404);
     }
     vector<ArticleMetadata> metadata;
-    vector<ostringstream> content;
     article_manager->get_metadata(ids, metadata);
-    article_manager->get_content(ids, content);
     ostringstream out;
-    gomibako.get_theme()->render_page(out, metadata, content, page, pages,
-                                      gomibako.get_site_information(), gomibako.get_url_maker());
+    gomibako.get_theme()->render_page(
+        out, metadata,
+        [article_manager] (const string &id, ostringstream &content) {
+            return article_manager->get_content(id, content);
+        },
+        page, pages, gomibako.get_site_information(), gomibako.get_url_maker()
+    );
     return crow::response(out.str());
 }
 
@@ -88,8 +91,13 @@ crow::response handler_tag(const string &tag_encoded, int page) {
     article_manager->get_metadata(ids, metadata);
     article_manager->get_content(ids, content);
     ostringstream out;
-    gomibako.get_theme()->render_tag(out, metadata, content, tag, page, pages,
-                                     gomibako.get_site_information(), gomibako.get_url_maker());
+    gomibako.get_theme()->render_tag(
+        out, metadata,
+        [article_manager] (const string &id, ostringstream &content) {
+            return article_manager->get_content(id, content);
+        },
+        tag, page, pages, gomibako.get_site_information(), gomibako.get_url_maker()
+    );
     return crow::response(out.str());
 }
 
@@ -424,19 +432,19 @@ crow::response handler_admin_page() {
     ctx["page_js"] = true;
     ctx["editor"] = true;
     ctx["title"] = "Page | Dashboard";
-    const vector<CustomPage> *pages = page_manager->get_pages();
-    for (size_t i = 0; i < pages->size(); ++i) {
-        const CustomPage &page = (*pages)[i];
+    const vector<CustomPage> pages = page_manager->get_pages();
+    for (size_t i = 0; i < pages.size(); ++i) {
+        const CustomPage &page = pages[i];
         ctx["page"][i]["id"] = page.id;
         ctx["page"][i]["id_encoded"] = urlencode(page.id.c_str(), page.id.length());
         ctx["page"][i]["title"] = page.title;
         ctx["page"][i]["order"] = page.order;
         ctx["page"][i]["content"] = page.content;
     }
-    if (pages->size() == 0) {
+    if (pages.size() == 0) {
         ctx["new_order"] = 1;
     } else {
-        ctx["new_order"] = (*pages)[pages->size() - 1].order + 1;
+        ctx["new_order"] = pages[pages.size() - 1].order + 1;
     }
     return crow::response(crow::mustache::load("page.html").render(ctx));
 }

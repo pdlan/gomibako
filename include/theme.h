@@ -32,12 +32,13 @@ public:
     std::function<void (std::ostringstream &, const ArticleMetadata &, const std::string &,
                         const SiteInformation &, std::shared_ptr<URLMaker> )> render_article;
     std::function<void (std::ostringstream &, const std::vector<ArticleMetadata> &,
-                        const std::vector<std::ostringstream> &, int, int,
+                        const std::function<bool (const std::string &, std::ostringstream &)> &, int, int,
                         const SiteInformation &, std::shared_ptr<URLMaker>)> render_page;
     std::function<void (std::ostringstream &, const std::vector<ArticleMetadata> &, int, int,
                         const SiteInformation &, std::shared_ptr<URLMaker>)> render_archives;
     std::function<void (std::ostringstream &, const std::vector<ArticleMetadata> &,
-                        const std::vector<std::ostringstream> &, const std::string &, int, int,
+                        const std::function<bool (const std::string &, std::ostringstream &)> &,
+                        const std::string &, int, int,
                         const SiteInformation &, std::shared_ptr<URLMaker>)> render_tag;
     std::function<void (std::ostringstream &, const CustomPage &, const SiteInformation &,
                         std::shared_ptr<URLMaker>)> render_custom_page;

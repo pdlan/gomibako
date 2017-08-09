@@ -16,6 +16,7 @@ struct SiteInformation {
     std::string url;
     std::string description;
     const std::vector<CustomPage> *pages;
+    const std::map<std::string, int> *tags;
 };
 
 class Gomibako {
@@ -23,19 +24,19 @@ public:
     static Gomibako & get_instance();
     bool initialize(const std::string &config_filename);
     bool start();
-    inline std::shared_ptr<ArticleManager> get_article_manager() {return this->article_manager;}
-    inline std::shared_ptr<ArticleManager> get_draft_manager() {return this->draft_manager;}
-    inline std::shared_ptr<PageManager> get_page_manager() {return this->page_manager;}
-    inline std::shared_ptr<Pager> get_article_pager() const {return this->article_pager;}
-    inline std::shared_ptr<Pager> get_tag_pager() const {return this->tag_pager;}
-    inline std::shared_ptr<Pager> get_archives_pager() const {return this->archives_pager;}
-    inline std::shared_ptr<CachedFilter<std::string>> get_tag_filter() {return this->tag_filter;}
-    inline std::shared_ptr<Theme> get_theme() const {return this->theme;}
-    inline std::shared_ptr<URLMaker> get_url_maker() const {return this->url_maker;}
-    inline const SiteInformation & get_site_information() const {return this->site_information;}
-    inline const std::map<std::string, std::string> & get_users() const {return this->users;}
+    std::shared_ptr<ArticleManager> get_article_manager() {return this->article_manager;}
+    std::shared_ptr<ArticleManager> get_draft_manager() {return this->draft_manager;}
+    std::shared_ptr<PageManager> get_page_manager() {return this->page_manager;}
+    std::shared_ptr<Pager> get_article_pager() const {return this->article_pager;}
+    std::shared_ptr<Pager> get_tag_pager() const {return this->tag_pager;}
+    std::shared_ptr<Pager> get_archives_pager() const {return this->archives_pager;}
+    std::shared_ptr<CachedFilter<std::string>> get_tag_filter() {return this->tag_filter;}
+    std::shared_ptr<Theme> get_theme() const {return this->theme;}
+    std::shared_ptr<URLMaker> get_url_maker() const {return this->url_maker;}
+    const SiteInformation & get_site_information() const {return this->site_information;}
+    const std::map<std::string, std::string> & get_users() const {return this->users;}
     time_t get_uptime() const;
-    inline std::string get_config_filename() const {return this->config_filename;}
+    std::string get_config_filename() const {return this->config_filename;}
 private:
     std::shared_ptr<Theme> theme;
     std::shared_ptr<URLMaker> url_maker;

@@ -29,11 +29,12 @@ bool Theme::load() {
          const SiteInformation &, std::shared_ptr<URLMaker>);
     typedef void (*RenderPage)
         (std::ostringstream &, const std::vector<ArticleMetadata> &,
-         const std::vector<std::ostringstream> &, int, int,
+         const std::function<bool (const std::string &, std::ostringstream &)> &, int, int,
          const SiteInformation &, std::shared_ptr<URLMaker>);
     typedef void (*RenderTag)
         (std::ostringstream &, const std::vector<ArticleMetadata> &,
-         const std::vector<std::ostringstream> &, const std::string &, int, int,
+         const std::function<bool (const std::string &, std::ostringstream &)> &,
+         const std::string &, int, int,
          const SiteInformation &, std::shared_ptr<URLMaker>);
     typedef void (*RenderArchives)
         (std::ostringstream &, const std::vector<ArticleMetadata> &,

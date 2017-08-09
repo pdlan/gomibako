@@ -9,12 +9,12 @@ using namespace std;
 using namespace gomibako;
 
 extern"C" void render_page(ostringstream &out, const vector<ArticleMetadata> &metadata,
-                           const vector<ostringstream> &content,
+                           const std::function<bool (const std::string &, std::ostringstream &)> &get_content,
                            int page, int pages, const SiteInformation &site_information,
                            shared_ptr<URLMaker> url_maker) {
     header(out, site_information, url_maker, site_information.name);
     out << R"(<ol id="posts">)";
-    for (size_t i = 0; i < content.size(); ++i) {
+    for (size_t i = 0; i < metadata.size(); ++i) {
         out <<
 R"(
     <li>

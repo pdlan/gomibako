@@ -27,6 +27,7 @@ struct SiteInformation {
     std::string url;
     std::string description;
     const std::vector<CustomPage> *pages;
+    const std::map<std::string, int> *tags;
 };
 
 struct ThemeConfiguration {

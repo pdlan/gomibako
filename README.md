@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/pdlan/gomibako.svg?branch=master)](https://travis-ci.org/pdlan/gomibako)
+
 Gomibako is a blog software in modern C++. The name is from another blog software [dustbin](https://github.com/pdlan/dustbin),
 as gomibako(ゴミ箱) means dustbin in Japanese.
 

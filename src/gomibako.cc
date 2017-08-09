@@ -65,7 +65,8 @@ bool Gomibako::initialize(const std::string &config_filename) {
         !this->page_manager->load_pages()) {
         return false;
     }
-    this->site_information.pages = this->page_manager->get_pages();
+    this->site_information.pages = &this->page_manager->get_pages();
+    this->site_information.tags = &this->article_manager->get_tags();
     this->article_pager.reset(new Pager(theme_config.articles_per_page));
     this->tag_pager.reset(new Pager(theme_config.articles_per_page_tag));
     this->archives_pager.reset(new Pager(theme_config.articles_per_page_archives));
