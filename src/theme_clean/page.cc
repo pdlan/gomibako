@@ -1,6 +1,7 @@
 #include <string>
 #include <sstream>
 #include <iomanip>
+#include <functional>
 #include <ctime>
 #include "theme_api.h"
 #include "layout.hpp"
