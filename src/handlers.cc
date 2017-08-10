@@ -759,7 +759,7 @@ crow::response StaticHandler::handle(const string &filename) {
 }
 
 string StaticHandler::get_mime_type(const string &filename) {
-    const map<string, string> MIMEType = {
+    static const map<string, string> MIMEType = {
         {"txt", "text/plain"},
         {"html", "text/html"},
         {"htm", "text/html"},
