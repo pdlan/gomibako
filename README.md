@@ -68,6 +68,13 @@ In Windows it should be theme_clean.dll
 
 Then enjoy your blog. Visit /admin/ to administrate your website.
 
+## Themes
+
+Now following themes are available.
+
+- clean (Default)
+- [maupaussant](https://github.com/pdlan/gomibako-theme-maupassant)
+
 ## Attributions
 
 Gomibako uses the following libraries.
