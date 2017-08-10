@@ -17,6 +17,8 @@ struct SiteInformation {
     std::string description;
     const std::vector<CustomPage> *pages;
     const std::map<std::string, int> *tags;
+    std::vector<ArticleMetadata> recent_articles;
+    std::function<void (int)> get_recent_articles;
 };
 
 class Gomibako {

@@ -51,6 +51,7 @@ public:
     const std::map<std::string, int> & get_tags() const {return this->tags;}
     void apply_filter(const Filter &filter, std::vector<std::string> &ids) const;
     void apply_filters(const std::vector<Filter> &filters, std::vector<std::string> &ids) const;
+    std::function<void (ArticleManager *article_manager)> on_update;
 private:
     TimeIDVector timestamp_id_pairs;
     IDMetadataMap id_metadata_map;

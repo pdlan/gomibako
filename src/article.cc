@@ -52,6 +52,9 @@ bool ArticleManager::load_metadata() {
             }
         }
     }
+    if (this->on_update) {
+        this->on_update(this);
+    }
     return true;
 }
 
@@ -136,6 +139,9 @@ bool ArticleManager::save_metadata() {
     }
     fs << out.c_str();
     fs.close();
+    if (this->on_update) {
+        this->on_update(this);
+    }
     return true;
 }
 

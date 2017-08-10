@@ -67,6 +67,25 @@ bool Gomibako::initialize(const std::string &config_filename) {
     }
     this->site_information.pages = &this->page_manager->get_pages();
     this->site_information.tags = &this->article_manager->get_tags();
+    this->site_information.get_recent_articles = [this](int articles) {
+        static int articles_ = 0;
+        static vector<string> empty;
+        if (articles_ != articles) {
+            articles_ = articles;
+            this->article_manager->apply_filter([this, articles](
+                const TimeIDVector &ids, const IDMetadataMap &metadata, TimeIDVector &out
+            ) {
+                size_t size = articles > ids.size() ? ids.size() : articles;
+                this->site_information.recent_articles.resize(size);
+                for (size_t i = 0; i < size; ++i) {
+                    this->site_information.recent_articles[i] = metadata.at(ids[i].second);
+                }
+            }, empty);
+        }
+    };
+    this->article_manager->on_update = [this] (ArticleManager *) {
+        this->site_information.get_recent_articles(0);
+    };
     this->article_pager.reset(new Pager(theme_config.articles_per_page));
     this->tag_pager.reset(new Pager(theme_config.articles_per_page_tag));
     this->archives_pager.reset(new Pager(theme_config.articles_per_page_archives));
