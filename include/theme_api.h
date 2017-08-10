@@ -5,6 +5,7 @@
 #include <memory>
 #include <vector>
 #include <set>
+#include <functional>
 
 namespace gomibako {
 struct ArticleMetadata {

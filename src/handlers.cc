@@ -733,9 +733,13 @@ crow::response StaticHandler::handle(const string &filename) {
             return crow::response(404);
         }
     }
-    const string &mime_type = it->second == "auto" ? get_mime_type(filename) : it->second;
+    string filename_simplified;
+    if (!simplify_path(filename, filename_simplified)) {
+        return crow::response(403);
+    }
+    const string &mime_type = it->second == "auto" ? get_mime_type(filename_simplified) : it->second;
     ostringstream path;
-    path << this->directory << "/" << filename;
+    path << this->directory << "/" << filename_simplified;
     ifstream fs(path.str(), ios::binary);
     if (!fs) {
         return crow::response(404);
@@ -765,9 +769,14 @@ string StaticHandler::get_mime_type(const string &filename) {
         {"jpeg", "image/jpeg"},
         {"png", "image/png"},
         {"gif", "image/gif"},
+        {"svg", "image/svg+xml"},
         {"ico", "image/x-icon"},
         {"xml", "application/xml"},
-        {"json", "application/json"}
+        {"json", "application/json"},
+        {"ttf", "font/ttf"},
+        {"eot", "application/vnd.ms-fontobject"},
+        {"woff", "font/woff"},
+        {"woff2", "font/woff2"}
     };
     size_t pos = filename.rfind('.');
     if (pos == string::npos || pos == filename.length() - 1) {
@@ -779,4 +788,47 @@ string StaticHandler::get_mime_type(const string &filename) {
         return "application/octet-stream";
     }
     return it->second;
+}
+
+bool StaticHandler::simplify_path(const string &path, string &out_) {
+    vector<string> parts;
+    ostringstream part, out;
+    int state = 1;
+    for (size_t i = 0; i <= path.length(); ++i) {
+        switch (state) {
+            case 1:
+                if (path[i] == '/' || path[i] == '\0') {
+                    state = 2;
+                    const string &part_str = part.str();
+                    if (part_str == "..") {
+                        if (parts.size()) {
+                            parts.pop_back();
+                        } else {
+                            return false;
+                        }
+                    } else if (part_str != "." && part_str != "") {
+                        parts.push_back(part_str);
+                    }
+                } else {
+                    part << path[i];
+                }
+                break;
+            case 2:
+                if (path[i] != '/') {
+                    state = 1;
+                    part.str("");
+                    part << path[i];
+                }
+                break;
+        }
+    }
+    for (size_t i = 0; i < parts.size(); ++i) {
+        if (i == 0) {
+            out << parts[i];
+        } else {
+            out << "/" << parts[i];
+        }
+    }
+    out_ = out.str();
+    return true;
 }
