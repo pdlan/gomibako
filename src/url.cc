@@ -166,3 +166,7 @@ std::string SimpleURLMaker::url_custom_page(const std::string &id) {
 std::string SimpleURLMaker::url_tags() {
     return site_url + "/tags";
 }
+
+std::string SimpleURLMaker::url_feed() {
+    return site_url + "/feed";
+}

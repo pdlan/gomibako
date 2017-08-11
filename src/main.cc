@@ -45,7 +45,7 @@ Usage:
 
 void install() {
     using namespace std;
-    string site_name, site_url, site_description, ip, username, password, theme;
+    string site_name, site_url, site_description, author, ip, username, password, theme;
     int port;
     cout << "Please answer the following questions to generate a configuration file.\n";
     cout << "Site name:";
@@ -54,6 +54,8 @@ void install() {
     getline(cin, site_url);
     cout << "Site description:";
     getline(cin, site_description);
+    cout << "Author:";
+    getline(cin, author);
     cout << "Bind ip (If you use reverse proxy, input 127.0.0.1, otherwise input 0.0.0.0):";
     getline(cin, ip);
     cout << "Port:";
@@ -71,6 +73,7 @@ void install() {
         << YAML::Key << "site-name" << YAML::Value << site_name
         << YAML::Key << "site-url" << YAML::Value << site_url
         << YAML::Key << "site-description" << YAML::Value << site_description
+        << YAML::Key << "author" << YAML::Value << author
         << YAML::Key << "ip" << YAML::Value << ip
         << YAML::Key << "port" << YAML::Value << port
         << YAML::Key << "theme" << YAML::Value << theme

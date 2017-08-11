@@ -15,6 +15,7 @@ struct SiteInformation {
     std::string name;
     std::string url;
     std::string description;
+    std::string author;
     const std::vector<CustomPage> *pages;
     const std::map<std::string, int> *tags;
     std::vector<ArticleMetadata> recent_articles;

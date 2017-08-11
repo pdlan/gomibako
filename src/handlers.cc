@@ -130,6 +130,65 @@ crow::response handler_tags() {
     return crow::response(out.str());
 }
 
+crow::response handler_feed() {
+    Gomibako &gomibako = Gomibako::get_instance();
+    shared_ptr<ArticleManager> article_manager = gomibako.get_article_manager();
+    vector<string> recent_articles;
+    article_manager->apply_filter(
+        [] (const TimeIDVector &ids, const IDMetadataMap &metadata, TimeIDVector &out) {
+            const int RecentArticles = 10;
+            size_t copy_size = ids.size() > RecentArticles ? RecentArticles : ids.size();
+            out.resize(copy_size);
+            copy(ids.begin(), ids.begin() + copy_size, out.begin());
+        },
+        recent_articles
+    );
+    vector<ArticleMetadata> metadata;
+    vector<ostringstream> content;
+    article_manager->get_metadata(recent_articles, metadata);
+    article_manager->get_content(recent_articles, content);
+    if (metadata.empty()) {
+        return crow::response(404);
+    }
+    if (metadata.size() != content.size()) {
+        return crow::response(500);
+    }
+    const SiteInformation &site_information = gomibako.get_site_information();
+    shared_ptr<URLMaker> url_maker = gomibako.get_url_maker();
+    ostringstream out;
+    out <<
+R"(<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <title>)" << site_information.name << R"(</title>
+    <link href=")" << url_maker->url_feed() << R"(" rel="self" />
+    <link href=")" << url_maker->url_index() << R"(" />
+    <updated>)" << put_time(gmtime(&metadata[0].timestamp), "%Y-%m-%dT%H:%M:%SZ") << R"(</updated>
+    <id>)" << site_information.url << R"(</id>)";
+    for (size_t i = 0; i < metadata.size(); ++i) {
+        const ArticleMetadata &m = metadata[i];
+        const ostringstream &c = content[i];
+        ostringstream xml_datetime;
+        xml_datetime << put_time(gmtime(&m.timestamp), "%Y-%m-%dT%H:%M:%SZ");
+        out << R"(
+    <entry>
+        <title><![CDATA[)" << m.title << R"(]]></title>
+        <author><name>)" << site_information.author
+            << "</name><uri>" << site_information.url << R"(</uri></author>
+        <link href=")" << url_maker->url_article(m.id) << R"(" />
+        <updated>)" << xml_datetime.str() << R"(</update>
+        <published>)" << xml_datetime.str() << R"(</published>
+        <id>)" << m.id << R"(</id>
+        <content type="html">
+            <![CDATA[)" << c.str() << R"(]]>
+        </content>
+    </entry>)";
+    }
+    out << "\n</feed>";
+    crow::response res(out.str());
+    res.set_header("Content-Type", "application/atom+xml");
+    return res;
+}
+
 crow::response handler_admin() {
     crow::json::wvalue ctx;
     ctx["title"] = "Home | Dashboard";

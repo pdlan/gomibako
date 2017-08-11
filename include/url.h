@@ -16,6 +16,7 @@ public:
     virtual std::string url_static(const std::string &path) = 0;
     virtual std::string url_custom_page(const std::string &id) = 0;
     virtual std::string url_tags() = 0;
+    virtual std::string url_feed() = 0;
 };
 
 class SimpleURLMaker : public URLMaker {
@@ -29,6 +30,7 @@ public:
     std::string url_static(const std::string &path);
     std::string url_custom_page(const std::string &id);
     std::string url_tags();
+    std::string url_feed();
 private:
     std::string site_url;
 };

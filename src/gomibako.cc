@@ -27,7 +27,7 @@ bool Gomibako::initialize(const std::string &config_filename) {
     }
     this->config_filename = config_filename;
     string theme_path;
-    std::vector<std::map<string, string>> _users;
+    std::vector<std::map<string, string>> users_;
     if (!extract_yaml_map(
         config,
         make_pair("ip", &this->ip),
@@ -36,12 +36,13 @@ bool Gomibako::initialize(const std::string &config_filename) {
         make_pair("site-name", &this->site_information.name),
         make_pair("site-url", &this->site_information.url),
         make_pair("site-description", &this->site_information.description),
-        make_pair("users", &_users)
+        make_pair("author", &this->site_information.author),
+        make_pair("users", &users_)
     )) {
         cerr << "Bad configuration file.\n";
         return false;
     }
-    for (auto &&i : _users) {
+    for (auto &&i : users_) {
         auto it1 = i.find("username");
         auto it2 = i.find("password");
         if (it1 == i.end() || it2 == i.end()) {
@@ -123,6 +124,7 @@ bool Gomibako::initialize(const std::string &config_filename) {
     CROW_ROUTE(app, "/archives/page/<uint>")(handler_archives);
     CROW_ROUTE(app, "/archives/")(std::bind(handler_archives, 1));
     CROW_ROUTE(app, "/tags")(handler_tags);
+    CROW_ROUTE(app, "/feed")(handler_feed);
     CROW_ROUTE(app, "/admin/")(handler_admin);
     CROW_ROUTE(app, "/admin/article/page/<uint>")(handler_admin_article);
     CROW_ROUTE(app, "/admin/article/")(std::bind(handler_admin_article, 1));

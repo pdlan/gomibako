@@ -27,6 +27,7 @@ struct SiteInformation {
     std::string name;
     std::string url;
     std::string description;
+    std::string author;
     const std::vector<CustomPage> *pages;
     const std::map<std::string, int> *tags;
     std::vector<ArticleMetadata> recent_articles;
@@ -52,6 +53,7 @@ public:
     virtual std::string url_static(const std::string &path) = 0;
     virtual std::string url_custom_page(const std::string &id) = 0;
     virtual std::string url_tags() = 0;
+    virtual std::string url_feed() = 0;
 };
 }
 #endif

@@ -16,7 +16,7 @@ R"(<!DOCTYPE html>
     <meta name="viewport" content="width=device-width" />
     <title>)" << title << R"(</title>
     <link rel="stylesheet" href=")" << url_maker->url_static("clean.css") << R"(" type="text/css" />
-    <link rel="alternate" type="application/rss+xml" href="/feed.xml" title=")" << site_information.name << R"(" />
+    <link rel="alternate" type="application/rss+xml" href=")" << url_maker->url_feed()<< R"(" title=")" << site_information.name << R"(" />
 </head>
 <body>
     <div id="wrapper" class="yue">
