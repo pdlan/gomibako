@@ -160,6 +160,7 @@ crow::response handler_feed() {
 R"(<?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
     <title>)" << site_information.name << R"(</title>
+    <subtitle>)" << site_information.description << R"(</subtitle>
     <link href=")" << url_maker->url_feed() << R"(" rel="self" />
     <link href=")" << url_maker->url_index() << R"(" />
     <updated>)" << put_time(gmtime(&metadata[0].timestamp), "%Y-%m-%dT%H:%M:%SZ") << R"(</updated>
@@ -726,10 +727,12 @@ crow::response handler_admin_config_edit(const crow::request &req) {
 }
 
 void ErrorHandler::after_handle(crow::request &req, crow::response &res, ErrorHandler::context &ctx) {
+    if (res.code == 200) {
+        return;
+    }
     Gomibako &gomibako = Gomibako::get_instance();
     shared_ptr<Theme> theme = gomibako.get_theme();
-    const set<int> &codes = theme->get_configuration().error_codes;
-    if (res.code != 200 && codes.count(res.code)) {
+    if (theme->get_configuration().error_codes.count(res.code)) {
         ostringstream out;
         theme->render_error(out, res.code, gomibako.get_site_information(), gomibako.get_url_maker());
         res.body = out.str();
@@ -741,12 +744,6 @@ void BasicAuth::before_handle(crow::request &req, crow::response &res, BasicAuth
         return;
     }
     const string &header = req.get_header_value("Authorization");
-    if (header.empty()) {
-        res.add_header("WWW-Authenticate", "Basic");
-        res.code = 401;
-        res.end();
-        return;
-    }
     if (header.length() < 7 || header.compare(0, 6, "Basic ") != 0) {
         res.add_header("WWW-Authenticate", "Basic");
         res.code = 401;
@@ -767,12 +764,12 @@ void BasicAuth::before_handle(crow::request &req, crow::response &res, BasicAuth
         res.end();
         return;
     }
-    string username = decoded.substr(0, pos);
-    string password = decoded.substr(pos + 1);
+    const string &username = decoded.substr(0, pos);
+    const string &password = decoded.substr(pos + 1);
     string password_hash;
     picosha2::hash256_hex_string(password, password_hash);
-    const auto &users = Gomibako::get_instance().get_users();
-    auto it = users.find(username);
+    const map<string, string> &users = Gomibako::get_instance().get_users();
+    auto &&it = users.find(username);
     if (it == users.end() || it->second != password_hash) {
         res.add_header("WWW-Authenticate", "Basic");
         res.code = 401;
@@ -781,8 +778,8 @@ void BasicAuth::before_handle(crow::request &req, crow::response &res, BasicAuth
     }
 }
 
-StaticHandler::StaticHandler(const string &_directory, const map<string, string> &_files) :
-    directory(_directory), files(_files) {}
+StaticHandler::StaticHandler(const string &directory_, const map<string, string> &files_) :
+    directory(directory_), files(files_) {}
 
 crow::response StaticHandler::handle(const string &filename) {
     auto &&it = this->files.find(filename);

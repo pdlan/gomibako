@@ -21,7 +21,7 @@ public:
 
 class SimpleURLMaker : public URLMaker {
 public:
-    SimpleURLMaker(const std::string &_site_url) : site_url(_site_url) {}
+    SimpleURLMaker(const std::string &site_url_) : site_url(site_url_) {}
     std::string url_article(const std::string &id);
     std::string url_page(int page);
     std::string url_tag(const std::string &tag, int page = 1);
