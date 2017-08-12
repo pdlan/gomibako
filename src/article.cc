@@ -261,7 +261,7 @@ std::string ArticleManager::generate_filename(const std::string &id) {
     return crow::utility::base64encode_urlsafe(id.c_str(), id.length()) + ".txt";
 }
 
-PageManager::PageManager(const std::string &_pages_path) : pages_path(_pages_path) {}
+PageManager::PageManager(const std::string &pages_path_) : pages_path(pages_path_) {}
 
 bool PageManager::load_pages() {
     using namespace std;

@@ -794,9 +794,8 @@ crow::response StaticHandler::handle(const string &filename) {
         return crow::response(403);
     }
     const string &mime_type = it->second == "auto" ? get_mime_type(filename_simplified) : it->second;
-    ostringstream path;
-    path << this->directory << "/" << filename_simplified;
-    ifstream fs(path.str(), ios::binary);
+    const string &path = this->directory + "/" + filename_simplified;
+    ifstream fs(path, ios::binary);
     if (!fs) {
         return crow::response(404);
     }
