@@ -9,32 +9,27 @@ namespace gomibako {
 template<class T>
 class CachedFilter {
 public:
-    CachedFilter(std::function<bool (const T &arg, const ArticleMetadata &metadata)> condition) {
-        this->condition = condition;
-    }
+    CachedFilter(std::function<bool (const T &arg, const ArticleMetadata &metadata)> condition_) : condition(condition_) {}
 
     Filter get_filter(const T &arg) {
-        return [=] (const TimeIDVector &ids, const IDMetadataMap &metadata, TimeIDVector &out) {
+        return [this, &arg] (const TimeIDMap &ids, const IDMetadataMap &metadata) -> std::shared_ptr<const TimeIDMap> {
             auto &&it = this->cache.find(arg);
             if (it == this->cache.end()) {
-                TimeIDVector *new_ids = new TimeIDVector;
+                std::shared_ptr<TimeIDMap> new_ids(new TimeIDMap);
                 for (auto &&i : ids) {
                     if (this->condition(arg, metadata.at(i.second))) {
-                        new_ids->push_back(i);
+                        new_ids->insert(i);
                     }
                 }
                 this->cache[arg] = new_ids;
-                out = *new_ids;
+                return new_ids;
             } else {
-                out = *it->second;
+                return it->second;
             }
         };
     }
 
     void clear_cache() {
-        for (auto &&i : this->cache) {
-            delete i.second;
-        }
         this->cache.clear();
     }
 
@@ -42,7 +37,7 @@ public:
         clear_cache();
     }
 private:
-    std::unordered_map<T, TimeIDVector *> cache;
+    std::unordered_map<T, std::shared_ptr<TimeIDMap>> cache;
     std::function<bool (const T &arg, const ArticleMetadata &metadata)> condition;
 };
 
@@ -54,17 +49,20 @@ public:
     }
 
     Filter get_filter(const T &arg) {
-        return [=] (const TimeIDVector &ids, const IDMetadataMap &metadata, TimeIDVector &out) {
+        return [this, &arg] (const TimeIDMap &ids, const IDMetadataMap &metadata) -> std::shared_ptr<const TimeIDMap> {
+            std::shared_ptr<TimeIDMap> out(new TimeIDMap);
             for (auto &&i : ids) {
                 if (this->condition(arg, metadata.at(i.second))) {
-                    out.push_back(i);
+                    out->insert(i);
                 }
             }
+            return out;
         };
     }
 
 private:
     std::function<bool (const T &arg, const ArticleMetadata &metadata)> condition;
 };
+
 }
 #endif

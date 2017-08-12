@@ -38,10 +38,9 @@ bool ArticleManager::load_metadata() {
         for (YAML::const_iterator it = root.begin(); it != root.end(); ++it) {
             const ArticleMetadata &metadata = it->as<ArticleMetadata>();
             this->id_metadata_map[metadata.id] = metadata;
-            this->timestamp_id_pairs.emplace_back(metadata.timestamp, metadata.id);
+            this->timestamp_id_pairs.emplace(metadata.timestamp, metadata.id);
         }
     }
-    sort_metadata();
     this->tags.clear();
     for (auto &&i : this->id_metadata_map) {
         for (auto &&tag : i.second.tags) {
@@ -58,13 +57,6 @@ bool ArticleManager::load_metadata() {
     return true;
 }
 
-void ArticleManager::sort_metadata() {
-    typedef std::pair<time_t, std::string> T;
-    std::sort(this->timestamp_id_pairs.begin(),
-              this->timestamp_id_pairs.end(),
-              [] (const T &a, const T &b) {return a.first > b.first;});
-}
-
 bool ArticleManager::get_metadata(const std::string &id, ArticleMetadata &metadata) const {
     auto &&it = this->id_metadata_map.find(id);
     if (it == this->id_metadata_map.end()) {
@@ -77,13 +69,14 @@ bool ArticleManager::get_metadata(const std::string &id, ArticleMetadata &metada
 
 bool ArticleManager::get_metadata(const std::vector<std::string> &ids,
                                   std::vector<ArticleMetadata> &metadata) const {
-    metadata.resize(ids.size());
+    metadata.clear();
+    metadata.reserve(ids.size());
     for (size_t i = 0; i < ids.size(); ++i) {
         auto &&it = this->id_metadata_map.find(ids[i]);
         if (it == this->id_metadata_map.end()) {
             return false;
         }
-        metadata[i] = it->second;
+        metadata.push_back(it->second);
     }
     return true;
 }
@@ -162,8 +155,7 @@ std::string ArticleManager::add_article(const std::string &title, const std::str
     fs << content;
     fs.close();
     this->id_metadata_map[id] = std::move(metadata);
-    this->timestamp_id_pairs.emplace_back(metadata.timestamp, id);
-    sort_metadata();
+    this->timestamp_id_pairs.emplace(metadata.timestamp, id);
     save_metadata();
     return id;
 }
@@ -173,17 +165,17 @@ bool ArticleManager::delete_article(const std::string &id, bool delete_file) {
     if (it == this->id_metadata_map.end()) {
         return false;
     }
-    const std::string &filename = this->content_path + it->second.filename;
-    this->id_metadata_map.erase(it);
-    for (auto it = this->timestamp_id_pairs.begin();
-         it != this->timestamp_id_pairs.end(); ++it) {
-        if (it->second == id) {
-            this->timestamp_id_pairs.erase(it);
+    auto &&itpair = this->timestamp_id_pairs.equal_range(it->second.timestamp);
+    for (auto i = itpair.first; i != itpair.second; ++i) {
+        if (i->second == id) {
+            this->timestamp_id_pairs.erase(i);
             break;
         }
     }
+    this->id_metadata_map.erase(it);
     save_metadata();
     if (delete_file) {
+        const std::string &filename = this->content_path + it->second.filename;
         remove(filename.c_str());
     }
     return true;
@@ -195,11 +187,14 @@ bool ArticleManager::edit_article(const std::string &id, const std::string &titl
     if (it == this->id_metadata_map.end()) {
         return false;
     }
-    auto &&it2 = std::find_if(this->timestamp_id_pairs.begin(),
-                              this->timestamp_id_pairs.end(),
-                              [&id] (const std::pair<time_t, std::string> &p) {
-                                  return p.second == id;
-                              });
+    auto &&itpair = this->timestamp_id_pairs.equal_range(it->second.timestamp);
+    for (auto i = itpair.first; i != itpair.second; ++i) {
+        if (i->second == id) {
+            this->timestamp_id_pairs.erase(i);
+            break;
+        }
+    }
+    this->timestamp_id_pairs.emplace(timestamp, id);
     std::ofstream fs(this->content_path + it->second.filename);
     if (!fs) {
         return false;
@@ -209,36 +204,40 @@ bool ArticleManager::edit_article(const std::string &id, const std::string &titl
     it->second.title = title;
     it->second.timestamp = timestamp;
     it->second.tags = tags;
-    it2->first = timestamp;
-    sort_metadata();
     return save_metadata();
 }
 
 void ArticleManager::apply_filter(const Filter &filter, std::vector<std::string> &ids) const {
-    TimeIDVector out;
-    filter(this->timestamp_id_pairs, this->id_metadata_map, out);
-    ids.resize(out.size());
-    for (size_t i = 0; i < out.size(); ++i) {
-        ids[i] = std::move(out[i].second);
+    std::shared_ptr<const TimeIDMap> out = filter(this->timestamp_id_pairs, this->id_metadata_map);
+    if (!out) {
+        return;
+    }
+    ids.clear();
+    ids.reserve(out->size());
+    for (auto &&i : *out) {
+        ids.push_back(i.second);
     }
 }
 
 void ArticleManager::apply_filters(const std::vector<Filter> &filters,
                                    std::vector<std::string> &ids) const {
     if (filters.size() == 0) {
+        return;
+    } else if (filters.size() == 1) {
         apply_filter(filters[0], ids);
         return;
     }
-    TimeIDVector out;
-    filters[0](this->timestamp_id_pairs, this->id_metadata_map, out);
+    std::shared_ptr<const TimeIDMap> out = filters[0](this->timestamp_id_pairs, this->id_metadata_map);
     for (size_t i = 1; i < filters.size(); ++i) {
-        TimeIDVector out2;
-        filters[i](out, this->id_metadata_map, out2);
-        out = std::move(out2);
+        if (!out) {
+            return;
+        }
+        out = filters[i](*out, this->id_metadata_map);
     }
-    ids.resize(out.size());
-    for (size_t i = 0; i < out.size(); ++i) {
-        ids[i] = std::move(out[i].second);
+    ids.clear();
+    ids.reserve(out->size());
+    for (auto &&i : *out) {
+        ids.push_back(i.second);
     }
 }
 

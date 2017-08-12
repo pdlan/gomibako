@@ -134,13 +134,10 @@ crow::response handler_feed() {
     Gomibako &gomibako = Gomibako::get_instance();
     shared_ptr<ArticleManager> article_manager = gomibako.get_article_manager();
     vector<string> recent_articles;
+    static Pager pager(10);
+    int pages;
     article_manager->apply_filter(
-        [] (const TimeIDVector &ids, const IDMetadataMap &metadata, TimeIDVector &out) {
-            const int RecentArticles = 10;
-            size_t copy_size = ids.size() > RecentArticles ? RecentArticles : ids.size();
-            out.resize(copy_size);
-            copy(ids.begin(), ids.begin() + copy_size, out.begin());
-        },
+        pager.get_filter(1, pages),
         recent_articles
     );
     vector<ArticleMetadata> metadata;
@@ -208,13 +205,14 @@ crow::response handler_admin() {
 }
 
 crow::response handler_admin_article_draft(shared_ptr<ArticleManager> manager, 
-                                            const char *tpl, int page) {
+                                           const char *tpl, int page) {
     if (page == 0) {
         return crow::response(404);
     }
     vector<string> ids;
     int pages;
-    manager->apply_filter(Pager(10).get_filter(page, pages), ids);
+    static Pager pager(10);
+    manager->apply_filter(pager.get_filter(page, pages), ids);
     if (page > pages && pages != 0) {
         return crow::response(404);
     }
@@ -381,8 +379,9 @@ crow::response handler_admin_article_move(const string &id_encoded) {
     static vector<string> empty;
     int page, pages;
     draft_manager->apply_filter(
-        [&] (const TimeIDVector &ids, const IDMetadataMap &metadata, TimeIDVector &_out) {
-            return get_pagination(ids, metadata, _out, new_id, 10, page, pages);
+        [&] (const TimeIDMap &ids, const IDMetadataMap &metadata) -> shared_ptr<const TimeIDMap> {
+            get_pagination(ids, metadata, new_id, 10, page, pages);
+            return nullptr;
         },
     empty);
     out << "/admin/draft/page/" << page;
@@ -477,8 +476,9 @@ crow::response handler_admin_draft_publish(const crow::request &req) {
     static vector<string> empty;
     int page, pages;
     article_manager->apply_filter(
-        [&] (const TimeIDVector &ids, const IDMetadataMap &metadata, TimeIDVector &_out) {
-            return get_pagination(ids, metadata, _out, new_id, 10, page, pages);
+        [&] (const TimeIDMap &ids, const IDMetadataMap &metadata) -> shared_ptr<const TimeIDMap> {
+            get_pagination(ids, metadata, new_id, 10, page, pages);
+            return nullptr;
         },
     empty);
     out << "/admin/article/page/" << page;

@@ -27,9 +27,9 @@ struct CustomPage {
     std::string content;
 };
 
-typedef std::vector<std::pair<time_t, std::string>> TimeIDVector;
+typedef std::map<time_t, std::string, std::greater<time_t>> TimeIDMap;
 typedef std::unordered_map<std::string, ArticleMetadata> IDMetadataMap;
-typedef std::function<void (const TimeIDVector &, const IDMetadataMap &, TimeIDVector &)> Filter;
+typedef std::function<std::shared_ptr<const TimeIDMap> (const TimeIDMap &, const IDMetadataMap &)> Filter;
 
 class ArticleManager {
 public:
@@ -47,13 +47,12 @@ public:
     bool delete_article(const std::string &id, bool delete_file = false);
     bool edit_article(const std::string &id, const std::string &title, time_t timestamp, 
                       const std::set<std::string> &tags, const std::string &content);
-    void sort_metadata();
     const std::map<std::string, int> & get_tags() const {return this->tags;}
     void apply_filter(const Filter &filter, std::vector<std::string> &ids) const;
     void apply_filters(const std::vector<Filter> &filters, std::vector<std::string> &ids) const;
     std::function<void (ArticleManager *article_manager)> on_update;
 private:
-    TimeIDVector timestamp_id_pairs;
+    TimeIDMap timestamp_id_pairs;
     IDMetadataMap id_metadata_map;
     std::map<std::string, int> tags;
     std::string metadata_path, content_path;

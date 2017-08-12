@@ -74,13 +74,16 @@ bool Gomibako::initialize(const std::string &config_filename) {
         if (articles_ != articles) {
             articles_ = articles;
             this->article_manager->apply_filter([this, articles](
-                const TimeIDVector &ids, const IDMetadataMap &metadata, TimeIDVector &out
-            ) {
+                const TimeIDMap &ids, const IDMetadataMap &metadata
+            ) -> std::shared_ptr<const TimeIDMap> {
                 size_t size = articles > ids.size() ? ids.size() : articles;
-                this->site_information.recent_articles.resize(size);
-                for (size_t i = 0; i < size; ++i) {
-                    this->site_information.recent_articles[i] = metadata.at(ids[i].second);
+                this->site_information.recent_articles.clear();
+                this->site_information.recent_articles.reserve(size);
+                auto &&it = ids.begin();
+                for (size_t i = 0; i < size; ++i, ++it) {
+                    this->site_information.recent_articles.push_back(metadata.at(it->second));
                 }
+                return nullptr;
             }, empty);
         }
     };
