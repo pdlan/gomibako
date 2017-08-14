@@ -35,13 +35,6 @@ void gomibako::get_pagination(const TimeIDMap &ids, const IDMetadataMap &metadat
     size_t size = ids.size();
     pages = ceil(double(size) / items_per_page);
     page = 0;
-    /*
-    for (size_t i = 0; i < ids.size(); ++i) {
-        if (ids[i].second == id) {
-            page = ceil((i + 1) / (double)items_per_page);
-        }
-    }
-    */
     auto &&it = metadata.find(id);
     if (it == metadata.end()) {
         return;

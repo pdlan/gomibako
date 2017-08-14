@@ -44,9 +44,7 @@ private:
 template<class T>
 class DirectFilter {
 public:
-    DirectFilter(std::function<bool (const T &arg, const ArticleMetadata &metadata)> condition) {
-        this->condition = condition;
-    }
+    DirectFilter(std::function<bool (const T &arg, const ArticleMetadata &metadata)> condition_) : condition(condition_) {}
 
     Filter get_filter(const T &arg) {
         return [this, &arg] (const TimeIDMap &ids, const IDMetadataMap &metadata) -> std::shared_ptr<const TimeIDMap> {

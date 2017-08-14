@@ -118,8 +118,8 @@ bool ArticleManager::get_content(const std::vector<std::string> &ids,
 bool ArticleManager::save_metadata() {
     YAML::Emitter out;
     out << YAML::BeginSeq;
-    for (auto &&i : this->id_metadata_map) {
-        YAML::Node metadata(i.second);
+    for (auto &&i : this->timestamp_id_pairs) {
+        YAML::Node metadata(this->id_metadata_map.at(i.second));
         out << metadata;
     }
     out << YAML::EndSeq;
@@ -172,7 +172,6 @@ bool ArticleManager::delete_article(const std::string &id, bool delete_file) {
             break;
         }
     }
-    this->id_metadata_map.erase(it);
     save_metadata();
     if (delete_file) {
         const std::string &filename = this->content_path + it->second.filename;
