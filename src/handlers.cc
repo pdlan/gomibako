@@ -378,12 +378,7 @@ crow::response handler_admin_article_move(const string &id_encoded) {
     article_manager->delete_article(id, true);
     static vector<string> empty;
     int page, pages;
-    draft_manager->apply_filter(
-        [&] (const TimeIDMap &ids, const IDMetadataMap &metadata) -> shared_ptr<const TimeIDMap> {
-            get_pagination(ids, metadata, new_id, 10, page, pages);
-            return nullptr;
-        },
-    empty);
+    draft_manager->apply_filter(get_pagination(new_id, 10, page, pages), empty);
     out << "/admin/draft/page/" << page;
     return crow::response(out.str());
 }
@@ -475,12 +470,7 @@ crow::response handler_admin_draft_publish(const crow::request &req) {
     draft_manager->delete_article(id, true);
     static vector<string> empty;
     int page, pages;
-    article_manager->apply_filter(
-        [&] (const TimeIDMap &ids, const IDMetadataMap &metadata) -> shared_ptr<const TimeIDMap> {
-            get_pagination(ids, metadata, new_id, 10, page, pages);
-            return nullptr;
-        },
-    empty);
+    article_manager->apply_filter(get_pagination(new_id, 10, page, pages), empty);
     out << "/admin/article/page/" << page;
     return crow::response(out.str());
 }

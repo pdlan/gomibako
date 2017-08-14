@@ -11,7 +11,6 @@ private:
     int items_per_page;
 };
 
-void get_pagination(const TimeIDMap &ids, const IDMetadataMap &metadata,
-                    const std::string &id, int items_per_page, int &page, int &pages);
+Filter get_pagination(const std::string &id, int items_per_page, int &page, int &pages);
 }
 #endif

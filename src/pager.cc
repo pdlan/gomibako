@@ -30,21 +30,23 @@ Filter Pager::get_filter(int page, int &pages) {
     };
 }
 
-void gomibako::get_pagination(const TimeIDMap &ids, const IDMetadataMap &metadata,
-                              const std::string &id, int items_per_page, int &page, int &pages) {
-    size_t size = ids.size();
-    pages = ceil(double(size) / items_per_page);
-    page = 0;
-    auto &&it = metadata.find(id);
-    if (it == metadata.end()) {
-        return;
-    }
-    auto &&itpair = ids.equal_range(it->second.timestamp);
-    size_t n = 0;
-    for (auto i = itpair.first; i != itpair.second; ++i, ++n) {
-        if (i->second == id) {
-            page = ceil((n + 1) / (double)items_per_page);
-            return;
+Filter gomibako::get_pagination(const std::string &id, int items_per_page, int &page, int &pages) {
+    return [&] (const TimeIDMap &ids, const IDMetadataMap &metadata) -> std::shared_ptr<const TimeIDMap> {
+        size_t size = ids.size();
+        pages = ceil(double(size) / items_per_page);
+        page = 0;
+        auto &&it = metadata.find(id);
+        if (it == metadata.end()) {
+            return nullptr;
         }
-    }
+        auto &&itpair = ids.equal_range(it->second.timestamp);
+        size_t n = 0;
+        for (auto i = itpair.first; i != itpair.second; ++i, ++n) {
+            if (i->second == id) {
+                page = ceil((n + 1) / (double)items_per_page);
+                return nullptr;
+            }
+        }
+        return nullptr;
+    };
 }
