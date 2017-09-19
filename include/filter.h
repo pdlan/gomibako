@@ -18,7 +18,7 @@ public:
                 std::shared_ptr<TimeIDMap> new_ids(new TimeIDMap);
                 for (auto &&i : ids) {
                     if (this->condition(arg, metadata.at(i.second))) {
-                        new_ids->insert(i);
+                        new_ids->push_back(i);
                     }
                 }
                 this->cache[arg] = new_ids;
@@ -51,7 +51,7 @@ public:
             std::shared_ptr<TimeIDMap> out(new TimeIDMap);
             for (auto &&i : ids) {
                 if (this->condition(arg, metadata.at(i.second))) {
-                    out->insert(i);
+                    out->push_back(i);
                 }
             }
             return out;

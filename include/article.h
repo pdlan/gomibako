@@ -27,15 +27,20 @@ struct CustomPage {
     std::string content;
 };
 
-typedef std::map<time_t, std::string, std::greater<time_t>> TimeIDMap;
+typedef std::vector<std::pair<time_t, std::string>> TimeIDMap;
 typedef std::unordered_map<std::string, ArticleMetadata> IDMetadataMap;
 typedef std::function<std::shared_ptr<const TimeIDMap> (const TimeIDMap &, const IDMetadataMap &)> Filter;
+
+inline bool compare_timestamp(const std::pair<time_t, std::string> &a, const std::pair<time_t, std::string> &b) {
+    return a.first > b.first;
+}
 
 class ArticleManager {
 public:
     ArticleManager(const std::string &articles_path);
     bool load_metadata();
     bool save_metadata();
+    void sort_metadata();
     bool get_metadata(const std::string &id, ArticleMetadata &metadata) const;
     bool get_metadata(const std::vector<std::string> &ids,
                       std::vector<ArticleMetadata> &metadata) const;

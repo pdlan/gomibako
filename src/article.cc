@@ -38,7 +38,7 @@ bool ArticleManager::load_metadata() {
         for (YAML::const_iterator it = root.begin(); it != root.end(); ++it) {
             const ArticleMetadata &metadata = it->as<ArticleMetadata>();
             this->id_metadata_map[metadata.id] = metadata;
-            this->timestamp_id_pairs.emplace(metadata.timestamp, metadata.id);
+            this->timestamp_id_pairs.emplace_back(metadata.timestamp, metadata.id);
         }
     }
     this->tags.clear();
@@ -51,6 +51,7 @@ bool ArticleManager::load_metadata() {
             }
         }
     }
+    sort_metadata();
     if (this->on_update) {
         this->on_update(this);
     }
@@ -138,6 +139,10 @@ bool ArticleManager::save_metadata() {
     return true;
 }
 
+void ArticleManager::sort_metadata() {
+    std::sort(this->timestamp_id_pairs.begin(), this->timestamp_id_pairs.end(), compare_timestamp);
+}
+
 std::string ArticleManager::add_article(const std::string &title, const std::string &content,
                                         time_t timestamp, const std::set<std::string> &tags) {
     const std::string &id = generate_id(title);
@@ -155,7 +160,8 @@ std::string ArticleManager::add_article(const std::string &title, const std::str
     fs << content;
     fs.close();
     this->id_metadata_map[id] = std::move(metadata);
-    this->timestamp_id_pairs.emplace(metadata.timestamp, id);
+    this->timestamp_id_pairs.emplace_back(metadata.timestamp, id);
+    sort_metadata();
     save_metadata();
     return id;
 }
@@ -165,7 +171,10 @@ bool ArticleManager::delete_article(const std::string &id, bool delete_file) {
     if (it == this->id_metadata_map.end()) {
         return false;
     }
-    auto &&itpair = this->timestamp_id_pairs.equal_range(it->second.timestamp);
+    auto &&itpair = std::equal_range(this->timestamp_id_pairs.begin(),
+                                     this->timestamp_id_pairs.end(),
+                                     std::make_pair(it->second.timestamp, it->second.id),
+                                     compare_timestamp);
     for (auto i = itpair.first; i != itpair.second; ++i) {
         if (i->second == id) {
             this->timestamp_id_pairs.erase(i);
@@ -186,14 +195,17 @@ bool ArticleManager::edit_article(const std::string &id, const std::string &titl
     if (it == this->id_metadata_map.end()) {
         return false;
     }
-    auto &&itpair = this->timestamp_id_pairs.equal_range(it->second.timestamp);
+    auto &&itpair = std::equal_range(this->timestamp_id_pairs.begin(),
+                                     this->timestamp_id_pairs.end(),
+                                     std::make_pair(it->second.timestamp, it->second.id),
+                                     compare_timestamp);
     for (auto i = itpair.first; i != itpair.second; ++i) {
         if (i->second == id) {
             this->timestamp_id_pairs.erase(i);
             break;
         }
     }
-    this->timestamp_id_pairs.emplace(timestamp, id);
+    this->timestamp_id_pairs.emplace_back(timestamp, id);
     std::ofstream fs(this->content_path + it->second.filename);
     if (!fs) {
         return false;
@@ -292,7 +304,7 @@ bool PageManager::load_pages() {
 }
 
 void PageManager::sort_pages() {
-    std::sort(this->pages.begin(), this->pages.end(), [](const CustomPage &a, const CustomPage &b) {
+    std::sort(this->pages.begin(), this->pages.end(), [] (const CustomPage &a, const CustomPage &b) {
         return a.order < b.order;
     });
 }

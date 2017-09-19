@@ -25,7 +25,8 @@ Filter Pager::get_filter(int page, int &pages) {
         int end = page == pages ? size : page * this->items_per_page;
         int out_size = end - begin;
         std::shared_ptr<TimeIDMap> out(new TimeIDMap);
-        std::copy_n(ids.begin(), out_size, std::inserter(*out, out->end()));
+        out->reserve(out_size);
+        std::copy(ids.begin() + begin, ids.begin() + end, std::inserter(*out, out->end()));
         return out;
     };
 }
@@ -39,7 +40,9 @@ Filter gomibako::get_pagination(const std::string &id, int items_per_page, int &
         if (it == metadata.end()) {
             return nullptr;
         }
-        auto &&itpair = ids.equal_range(it->second.timestamp);
+        auto &&itpair = std::equal_range(ids.begin(), ids.end(),
+                                         std::make_pair(it->second.timestamp, it->second.id),
+                                         compare_timestamp);
         size_t n = 0;
         for (auto i = itpair.first; i != itpair.second; ++i, ++n) {
             if (i->second == id) {
