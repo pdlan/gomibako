@@ -41,16 +41,7 @@ bool ArticleManager::load_metadata() {
             this->timestamp_id_pairs.emplace_back(metadata.timestamp, metadata.id);
         }
     }
-    this->tags.clear();
-    for (auto &&i : this->id_metadata_map) {
-        for (auto &&tag : i.second.tags) {
-            if (this->tags.count(tag)) {
-                ++this->tags[tag];
-            } else {
-                this->tags[tag] = 1;
-            }
-        }
-    }
+    update_tags();
     sort_metadata();
     if (this->on_update) {
         this->on_update(this);
@@ -163,6 +154,7 @@ std::string ArticleManager::add_article(const std::string &title, const std::str
     this->timestamp_id_pairs.emplace_back(metadata.timestamp, id);
     sort_metadata();
     save_metadata();
+    update_tags();
     return id;
 }
 
@@ -182,6 +174,7 @@ bool ArticleManager::delete_article(const std::string &id, bool delete_file) {
         }
     }
     save_metadata();
+    update_tags();
     if (delete_file) {
         const std::string &filename = this->content_path + it->second.filename;
         remove(filename.c_str());
@@ -215,6 +208,7 @@ bool ArticleManager::edit_article(const std::string &id, const std::string &titl
     it->second.title = title;
     it->second.timestamp = timestamp;
     it->second.tags = tags;
+    update_tags();
     return save_metadata();
 }
 
@@ -269,6 +263,19 @@ std::string ArticleManager::generate_id(const std::string &title) {
 
 std::string ArticleManager::generate_filename(const std::string &id) {
     return crow::utility::base64encode_urlsafe(id.c_str(), id.length()) + ".txt";
+}
+
+void ArticleManager::update_tags() {
+    this->tags.clear();
+    for (auto &&i : this->id_metadata_map) {
+        for (auto &&tag : i.second.tags) {
+            if (this->tags.count(tag)) {
+                ++this->tags[tag];
+            } else {
+                this->tags[tag] = 1;
+            }
+        }
+    }
 }
 
 PageManager::PageManager(const std::string &pages_path_) : pages_path(pages_path_) {}

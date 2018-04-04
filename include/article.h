@@ -63,6 +63,7 @@ private:
     std::string metadata_path, content_path;
     std::string generate_id(const std::string &title);
     std::string generate_filename(const std::string &id);
+    void update_tags();
 };
 
 class PageManager {
