@@ -208,6 +208,7 @@ bool ArticleManager::edit_article(const std::string &id, const std::string &titl
     it->second.title = title;
     it->second.timestamp = timestamp;
     it->second.tags = tags;
+    sort_metadata();
     update_tags();
     return save_metadata();
 }
