@@ -241,6 +241,9 @@ void ArticleManager::apply_filters(const std::vector<Filter> &filters,
         out = filters[i](*out, this->id_metadata_map);
     }
     ids.clear();
+    if (!out) {
+        return;
+    }
     ids.reserve(out->size());
     for (auto &&i : *out) {
         ids.push_back(i.second);
